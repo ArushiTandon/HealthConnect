@@ -1,0 +1,137 @@
+[
+{
+  "name": "Metropolitan General Hospital",
+  "city": "New Delhi",
+  "address": "1234 Medical Center Drive, Rohini, DL 110085",
+  "contactNumber": "+1 (555) 123-4567",
+  "email": "info@metrogeneralhospital.com",
+  "website": "https://www.metrogeneralhospital.com",
+  "totalBeds": 450,
+  "availableBeds": 89,
+  "icuBeds": 12,
+  "emergencyBeds": 25,
+  "occupancyRate": 80,
+  "facilities": ["ICU", "Emergency Department", "Surgery Center", "Pharmacy", "Radiology"],
+  "facilityStatus": {
+    "ICU": "Available",
+    "Physical Therapy": "Unavailable",
+    "Cardiology": "Available"
+  },
+  "medicalSpecialties": ["Cardiology", "Neurology", "Orthopedics", "Oncology", "Gastroenterology"],
+  "rating": 4.2,
+  "notes": "Available 24/7 for emergency services."
+},
+
+{
+  "name": "Harmony Super Speciality Hospital",
+  "city": "Hyderabad",
+  "address": "6-3-456, Banjara Hills, Hyderabad, TS 500034",
+  "contactNumber": "+91 90123 45678",
+  "email": "support@harmonyhospitals.in",
+  "website": "https://www.harmonyhospitals.in",
+  "totalBeds": 400,
+  "availableBeds": 102,
+  "icuBeds": 14,
+  "emergencyBeds": 20,
+  "occupancyRate": 74,
+  "facilities": ["ICU", "Emergency", "Cardiac Care", "MRI", "Dialysis", "Cafeteria"],
+  "facilityStatus": {
+    "ICU": "Available",
+    "Cardiac Care": "Available",
+    "Dialysis": "Available"
+  },
+  "medicalSpecialties": ["Cardiology", "Neurosurgery", "Pulmonology", "General Surgery", "Pediatrics"],
+  "rating": 4.5,
+  "notes": "Free cardiac screening camp on Sundays."
+},
+
+{
+  "name": "CityCare Multispeciality Hospital",
+  "city": "Bangalore",
+  "address": "45 MG Road, Bangalore, KA 560001",
+  "contactNumber": "+91 98765 43210",
+  "email": "contact@citycarehosp.in",
+  "website": "https://www.citycarehosp.in",
+  "totalBeds": 300,
+  "availableBeds": 54,
+  "icuBeds": 8,
+  "emergencyBeds": 15,
+  "occupancyRate": 82,
+  "facilities": ["ICU", "Emergency Department", "Dialysis", "Radiology", "Blood Bank"],
+  "facilityStatus": {
+    "ICU": "Available",
+    "Dialysis": "Available",
+    "Neurology": "Available"
+  },
+  "medicalSpecialties": ["Neurology", "Orthopedics", "Dermatology", "ENT", "Cardiology"],
+  "rating": 4.0,
+  "notes": "Emergency services are available 24x7. Dialysis temporarily suspended."
+},
+
+{
+  "name": "Green Valley Hospital",
+  "city": "Chennai",
+  "address": "212 Anna Salai, Chennai, TN 600018",
+  "contactNumber": "+91 98456 32109",
+  "email": "help@greenvalleyhosp.com",
+  "website": "https://www.greenvalleyhosp.com",
+  "totalBeds": 500,
+  "availableBeds": 120,
+  "icuBeds": 20,
+  "emergencyBeds": 30,
+  "occupancyRate": 76,
+  "facilities": ["ICU", "Emergency Department", "Neonatal Care", "MRI/CT", "Pharmacy"],
+  "facilityStatus": {
+    "ICU": "Available",
+    "Neonatal Care": "Available",
+    "Cardiology": "Unavailable"
+  },
+  "medicalSpecialties": ["Pediatrics", "Gynecology", "Cardiology", "Oncology", "General Medicine"],
+  "rating": 4.3,
+  "notes": "Equipped with Level 3 ICU and neonatal care units."
+},
+{
+  "name": "Sunrise Health Institute",
+  "city": "Delhi",
+  "address": "Plot No. 12, Rohini Sector 22, Delhi, 110086",
+  "contactNumber": "+91 91234 56789",
+  "email": "info@sunrisehealth.in",
+  "website": "https://www.sunrisehealth.in",
+  "totalBeds": 350,
+  "availableBeds": 70,
+  "icuBeds": 10,
+  "emergencyBeds": 18,
+  "occupancyRate": 80,
+  "facilities": ["ICU", "Emergency", "Surgery Unit", "Pathology Lab", "Radiology"],
+  "facilityStatus": {
+    "ICU": "Unavailable",
+    "Radiology": "Available",
+    "Pathology": "Available"
+  },
+  "medicalSpecialties": ["Urology", "Endocrinology", "Nephrology", "Orthopedics", "Dermatology"],
+  "rating": 3.9,
+  "notes": "ICU under maintenance until June 25."
+},
+{
+  "name": "Lotus Care Hospital & Research Center",
+  "city": "Pune",
+  "address": "Survey No. 221, Hinjawadi Phase 2, Pune, MH 411057",
+  "contactNumber": "+91 93214 78965",
+  "email": "care@lotushospital.org",
+  "website": "https://www.lotushospital.org",
+  "totalBeds": 250,
+  "availableBeds": 35,
+  "icuBeds": 6,
+  "emergencyBeds": 10,
+  "occupancyRate": 86,
+  "facilities": ["Emergency", "Radiology", "Pharmacy", "Burn Unit", "Rehabilitation"],
+  "facilityStatus": {
+    "Burn Unit": "Available",
+    "ICU": "Unavailable",
+    "Rehabilitation": "Available"
+  },
+  "medicalSpecialties": ["Burn Care", "Rehabilitation", "Internal Medicine", "Neurology", "ENT"],
+  "rating": 3.8,
+  "notes": "Rehabilitation center open 9 AM to 9 PM. ICU temporarily full."
+}
+]
