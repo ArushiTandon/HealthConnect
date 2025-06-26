@@ -17,7 +17,7 @@ import {
   SidebarTrigger,
   SidebarInset
 } from "../components/ui/sidebar";
-import { AdminSidebar } from "../components/AdminSideBar";
+import { AdminSidebar } from "../components/AdminSidebar";
 import { BedManagement } from "../components/BedManagement";
 import { FacilityManagement } from "../components/FacilityManagement";
 import { HospitalInfoForm } from "../components/HospitalInfoForm";
