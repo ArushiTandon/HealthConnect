@@ -1,14 +1,14 @@
 import { Search, Filter, Hospital, MapPin, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Checkbox } from "./ui/checkbox";
+import { Switch } from "./ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
 
 interface FilterBarProps {
   searchQuery: string;

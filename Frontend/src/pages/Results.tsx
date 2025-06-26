@@ -1,8 +1,8 @@
 
 import { useState } from "react";
-import ResultsHeader from "@/components/ResultsHeader";
-import FilterBar from "@/components/FilterBar";
-import HospitalCard from "@/components/HospitalCard";
+import ResultsHeader from "../components/ResultsHeader";
+import FilterBar from "../components/FilterBar";
+import HospitalCard from "../components/HospitalCard";
 
 const Results = () => {
   const [searchQuery, setSearchQuery] = useState("");

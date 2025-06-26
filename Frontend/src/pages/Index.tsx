@@ -1,7 +1,7 @@
 import { Search, Hospital, Ambulance, Heart, Shield, Clock, MapPin, Phone, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardContent } from "../components/ui/card";
 import { useState } from "react";
 
 const Index = () => {
