@@ -1,16 +1,18 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Bed, Plus, Minus } from "lucide-react";
+import {type HospitalDashboardData, adminApi } from "../services/adminApi";
+import { useToast } from "../hooks/use-toast";
 
 interface BedManagementProps {
   onUpdate: () => void;
+  dashboardData: HospitalDashboardData;
 }
 
-export function BedManagement({ onUpdate }: BedManagementProps) {
+export function BedManagement({ onUpdate, dashboardData }: BedManagementProps) {
   const [bedStats, setBedStats] = useState({
     total: 150,
     available: 45,
@@ -19,26 +21,68 @@ export function BedManagement({ onUpdate }: BedManagementProps) {
     general: { total: 115, available: 32 }
   });
 
-  const updateBedCount = (category: string, type: 'total' | 'available', change: number) => {
-    setBedStats(prev => {
-      const updated = { ...prev };
-      if (category === 'total') {
-        updated.total = Math.max(0, updated.total + change);
-        updated.available = Math.max(0, updated.available + change);
-      } else if (category === 'available') {
-        updated.available = Math.max(0, Math.min(updated.total, updated.available + change));
-      } else {
-        const cat = updated[category as keyof typeof updated] as { total: number; available: number };
-        if (type === 'total') {
-          cat.total = Math.max(0, cat.total + change);
-          cat.available = Math.min(cat.available, cat.total);
-        } else {
-          cat.available = Math.max(0, Math.min(cat.total, cat.available + change));
-        }
+  const { toast } = useToast();
+
+  // Update bed stats based on dashboard data
+  useEffect(() => {
+    setBedStats({
+      total: dashboardData.totalBeds,
+      available: dashboardData.availableBeds,
+      icu: { total: dashboardData.icuBeds, available: Math.floor(dashboardData.icuBeds * 0.25) },
+      emergency: { total: dashboardData.emergencyBeds, available: Math.floor(dashboardData.emergencyBeds * 0.5) },
+      general: { 
+        total: dashboardData.totalBeds - dashboardData.icuBeds - dashboardData.emergencyBeds, 
+        available: dashboardData.availableBeds - Math.floor(dashboardData.icuBeds * 0.25) - Math.floor(dashboardData.emergencyBeds * 0.5)
       }
-      return updated;
     });
-    onUpdate();
+  }, [dashboardData]);
+
+  const updateBedCount = async (category: string, type: 'total' | 'available', change: number) => {
+    if (category === 'available' && type === 'available') {
+      const newAvailableBeds = Math.max(0, Math.min(bedStats.total, bedStats.available + change));
+      
+      try {
+        await adminApi.updateAvailableBeds(newAvailableBeds);
+        
+        setBedStats(prev => ({
+          ...prev,
+          available: newAvailableBeds
+        }));
+
+        toast({
+          title: "Success",
+          description: "Available beds updated successfully",
+        });
+
+        onUpdate();
+      } catch (error) {
+        console.error('Error updating beds:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update bed availability",
+          variant: "destructive",
+        });
+      }
+    } else {
+      // For other categories, update locally (in real app, would need separate APIs)
+      setBedStats(prev => {
+        const updated = { ...prev };
+        if (category === 'total') {
+          updated.total = Math.max(0, updated.total + change);
+          updated.available = Math.max(0, updated.available + change);
+        } else {
+          const cat = updated[category as keyof typeof updated] as { total: number; available: number };
+          if (type === 'total') {
+            cat.total = Math.max(0, cat.total + change);
+            cat.available = Math.min(cat.available, cat.total);
+          } else {
+            cat.available = Math.max(0, Math.min(cat.total, cat.available + change));
+          }
+        }
+        return updated;
+      });
+      onUpdate();
+    }
   };
 
   const BedCounter = ({ 
@@ -105,7 +149,7 @@ export function BedManagement({ onUpdate }: BedManagementProps) {
           </div>
         </div>
         <div className="text-sm text-gray-600">
-          Occupancy: {Math.round(((total - available) / total) * 100)}%
+          Occupancy: {total > 0 ? Math.round(((total - available) / total) * 100) : 0}%
         </div>
       </CardContent>
     </Card>
@@ -123,7 +167,7 @@ export function BedManagement({ onUpdate }: BedManagementProps) {
           title="Total Hospital"
           total={bedStats.total}
           available={bedStats.available}
-          category="total"
+          category="available"
           icon={Bed}
         />
         
@@ -158,27 +202,53 @@ export function BedManagement({ onUpdate }: BedManagementProps) {
           <CardDescription>Bulk bed availability updates</CardDescription>
         </CardHeader>
         <CardContent className="flex gap-4">
-          <Button onClick={() => {
-            setBedStats(prev => ({
-              ...prev,
-              available: prev.total,
-              icu: { ...prev.icu, available: prev.icu.total },
-              emergency: { ...prev.emergency, available: prev.emergency.total },
-              general: { ...prev.general, available: prev.general.total }
-            }));
-            onUpdate();
+          <Button onClick={async () => {
+            try {
+              await adminApi.updateAvailableBeds(bedStats.total);
+              setBedStats(prev => ({
+                ...prev,
+                available: prev.total,
+                icu: { ...prev.icu, available: prev.icu.total },
+                emergency: { ...prev.emergency, available: prev.emergency.total },
+                general: { ...prev.general, available: prev.general.total }
+              }));
+              toast({
+                title: "Success",
+                description: "All beds marked as available",
+              });
+              onUpdate();
+            } catch (error) {
+              toast({
+                title: "Error",
+                description: "Failed to update bed availability",
+                variant: "destructive",
+              });
+            }
           }}>
             Mark All Available
           </Button>
-          <Button variant="outline" onClick={() => {
-            setBedStats(prev => ({
-              ...prev,
-              available: 0,
-              icu: { ...prev.icu, available: 0 },
-              emergency: { ...prev.emergency, available: 0 },
-              general: { ...prev.general, available: 0 }
-            }));
-            onUpdate();
+          <Button variant="outline" onClick={async () => {
+            try {
+              await adminApi.updateAvailableBeds(0);
+              setBedStats(prev => ({
+                ...prev,
+                available: 0,
+                icu: { ...prev.icu, available: 0 },
+                emergency: { ...prev.emergency, available: 0 },
+                general: { ...prev.general, available: 0 }
+              }));
+              toast({
+                title: "Success",
+                description: "All beds marked as occupied",
+              });
+              onUpdate();
+            } catch (error) {
+              toast({
+                title: "Error",
+                description: "Failed to update bed availability",
+                variant: "destructive",
+              });
+            }
           }}>
             Mark All Occupied
           </Button>

@@ -1,28 +1,43 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "../hooks/use-toast";
+import { type HospitalDashboardData, adminApi } from "../services/adminApi";
 
 interface HospitalInfoFormProps {
   onUpdate: () => void;
+  dashboardData: HospitalDashboardData;
 }
 
-export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
+export function HospitalInfoForm({ onUpdate, dashboardData }: HospitalInfoFormProps) {
   const { toast } = useToast();
   const [hospitalInfo, setHospitalInfo] = useState({
-    name: "St. Mary's Hospital",
-    address: "123 Healthcare Ave, Medical City, MC 12345",
-    phone: "(555) 123-4567",
-    email: "admin@stmarys.hospital",
-    website: "www.stmaryshospital.com",
-    description: "A leading healthcare facility providing comprehensive medical services to our community with state-of-the-art equipment and experienced medical professionals.",
-    emergencyPhone: "(555) 911-0000",
-    departments: "Cardiology, Neurology, Orthopedics, Pediatrics, Emergency Medicine"
+    name: "",
+    address: "",
+    phone: "",
+    email: "",
+    website: "",
+    description: "",
+    emergencyPhone: "",
+    departments: ""
   });
+
+  // Update form with dashboard data
+  useEffect(() => {
+    setHospitalInfo({
+      name: dashboardData.hospitalName || "",
+      address: dashboardData.address || "",
+      phone: dashboardData.contactNumber || "",
+      email: dashboardData.email || "",
+      website: dashboardData.website || "",
+      description: dashboardData.notes || "",
+      emergencyPhone: dashboardData.contactNumber || "",
+      departments: dashboardData.medicalSpecialties?.join(", ") || ""
+    });
+  }, [dashboardData]);
 
   const handleInputChange = (field: string, value: string) => {
     setHospitalInfo(prev => ({
@@ -31,13 +46,26 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
     }));
   };
 
-  const handleSave = () => {
-    // In a real app, this would save to a database
-    onUpdate();
-    toast({
-      title: "Hospital information updated",
-      description: "Your changes have been saved successfully.",
-    });
+  const handleSave = async () => {
+    try {
+      // Update notes (description) via API
+      if (hospitalInfo.description !== dashboardData.notes) {
+        await adminApi.updateNotes(hospitalInfo.description);
+      }
+      
+      onUpdate();
+      toast({
+        title: "Hospital information updated",
+        description: "Your changes have been saved successfully.",
+      });
+    } catch (error) {
+      console.error('Error updating hospital info:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update hospital information",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -61,7 +89,9 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
                 value={hospitalInfo.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 className="mt-1"
+                disabled
               />
+              <p className="text-sm text-gray-500 mt-1">Contact system admin to change hospital name</p>
             </div>
             <div>
               <Label htmlFor="description">Description</Label>
@@ -82,7 +112,9 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
                 className="mt-1"
                 rows={3}
                 placeholder="List main departments separated by commas"
+                disabled
               />
+              <p className="text-sm text-gray-500 mt-1">Contact system admin to update specialties</p>
             </div>
           </CardContent>
         </Card>
@@ -101,7 +133,9 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
                 onChange={(e) => handleInputChange('address', e.target.value)}
                 className="mt-1"
                 rows={2}
+                disabled
               />
+              <p className="text-sm text-gray-500 mt-1">Contact system admin to change address</p>
             </div>
             <div>
               <Label htmlFor="phone">Main Phone</Label>
@@ -110,7 +144,9 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
                 value={hospitalInfo.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 className="mt-1"
+                disabled
               />
+              <p className="text-sm text-gray-500 mt-1">Contact system admin to change phone</p>
             </div>
             <div>
               <Label htmlFor="emergencyPhone">Emergency Phone</Label>
@@ -119,6 +155,7 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
                 value={hospitalInfo.emergencyPhone}
                 onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
                 className="mt-1"
+                disabled
               />
             </div>
             <div>
@@ -129,7 +166,9 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
                 value={hospitalInfo.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 className="mt-1"
+                disabled
               />
+              <p className="text-sm text-gray-500 mt-1">Contact system admin to change email</p>
             </div>
             <div>
               <Label htmlFor="website">Website</Label>
@@ -138,7 +177,9 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
                 value={hospitalInfo.website}
                 onChange={(e) => handleInputChange('website', e.target.value)}
                 className="mt-1"
+                disabled
               />
+              <p className="text-sm text-gray-500 mt-1">Contact system admin to change website</p>
             </div>
           </CardContent>
         </Card>
@@ -155,7 +196,17 @@ export function HospitalInfoForm({ onUpdate }: HospitalInfoFormProps) {
               Save Changes
             </Button>
             <Button variant="outline" onClick={() => {
-              // Reset to original values - in real app, fetch from server
+              // Reset to dashboard data
+              setHospitalInfo({
+                name: dashboardData.hospitalName || "",
+                address: dashboardData.address || "",
+                phone: dashboardData.contactNumber || "",
+                email: dashboardData.email || "",
+                website: dashboardData.website || "",
+                description: dashboardData.notes || "",
+                emergencyPhone: dashboardData.contactNumber || "",
+                departments: dashboardData.medicalSpecialties?.join(", ") || ""
+              });
               toast({
                 title: "Changes discarded",
                 description: "All unsaved changes have been reverted.",

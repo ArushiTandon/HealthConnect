@@ -3,17 +3,27 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { useNavigate } from "react-router-dom";
 
-interface Hospital {
-  id: number;
+export interface Hospital {
+  _id: string; // MongoDB gives this automatically
   name: string;
   city: string;
-  availableBeds: number;
+  address: string;
+  contactNumber: string;
+  email?: string;
+  website?: string;
   totalBeds: number;
+  availableBeds: number;
+  icuBeds?: number;
+  emergencyBeds?: number;
+  lastUpdated?: string; // or Date, depending on how you parse it
   facilities: string[];
-  lastUpdated: string;
-  rating: number;
-  distance: string;
+  facilityStatus?: Record<string, string>; // a map of string -> string
+  medicalSpecialties: string[];
+  rating?: number;
+  notes?: string;
+  distance?: string; 
 }
+
 
 interface HospitalCardProps {
   hospital: Hospital;
@@ -42,7 +52,7 @@ const HospitalCard = ({ hospital }: HospitalCardProps) => {
   };
 
   const handleViewDetails = () => {
-    navigate(`/hospital/${hospital.id}`);
+    navigate(`/hospital/gethospital/${hospital._id}`);
   };
 
   return (

@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { Badge } from "./ui/badge";
 import { CheckCircle, XCircle, Activity, Heart, Stethoscope, Users, Car, Zap, Building } from "lucide-react";
+import {type HospitalDashboardData, adminApi } from "../services/adminApi";
+import { useToast } from "../hooks/use-toast";
 
 interface FacilityManagementProps {
   onUpdate: () => void;
+  dashboardData: HospitalDashboardData;
 }
 
-export function FacilityManagement({ onUpdate }: FacilityManagementProps) {
+export function FacilityManagement({ onUpdate, dashboardData }: FacilityManagementProps) {
   const [facilities, setFacilities] = useState([
     { id: 'icu', name: 'ICU', available: true, icon: Heart },
     { id: 'emergency', name: 'Emergency Room', available: true, icon: Activity },
@@ -21,15 +24,51 @@ export function FacilityManagement({ onUpdate }: FacilityManagementProps) {
     { id: 'pharmacy', name: '24/7 Pharmacy', available: false, icon: Building },
   ]);
 
-  const toggleFacility = (id: string) => {
-    setFacilities(prev => 
-      prev.map(facility => 
-        facility.id === id 
-          ? { ...facility, available: !facility.available }
-          : facility
-      )
-    );
-    onUpdate();
+  const { toast } = useToast();
+
+  // Update facilities based on dashboard data
+  useEffect(() => {
+    if (dashboardData.facilityStatus) {
+      setFacilities(prev => 
+        prev.map(facility => ({
+          ...facility,
+          available: dashboardData.facilityStatus[facility.id] === 'available'
+        }))
+      );
+    }
+  }, [dashboardData]);
+
+  const toggleFacility = async (id: string) => {
+    const facility = facilities.find(f => f.id === id);
+    if (!facility) return;
+
+    const newStatus = facility.available ? 'unavailable' : 'available';
+
+    try {
+      await adminApi.updateFacilityStatus(id, newStatus);
+      
+      setFacilities(prev => 
+        prev.map(f => 
+          f.id === id 
+            ? { ...f, available: !f.available }
+            : f
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: `${facility.name} status updated successfully`,
+      });
+
+      onUpdate();
+    } catch (error) {
+      console.error('Error updating facility:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update facility status",
+        variant: "destructive",
+      });
+    }
   };
 
   const activeCount = facilities.filter(f => f.available).length;

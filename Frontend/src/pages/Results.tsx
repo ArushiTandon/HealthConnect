@@ -1,10 +1,13 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import API from "../lib/axios";
 import ResultsHeader from "../components/ResultsHeader";
 import FilterBar from "../components/FilterBar";
 import HospitalCard from "../components/HospitalCard";
 
+
 const Results = () => {
+  const [hospitals, setHospitals] = useState<HospitalCard[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("All Cities");
   const [selectedFacility, setSelectedFacility] = useState("All Facilities");
@@ -12,93 +15,58 @@ const Results = () => {
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
 
-  const hospitals = [
-    {
-      id: 1,
-      name: "City General Hospital",
-      city: "New York",
-      availableBeds: 12,
-      totalBeds: 100,
-      facilities: ["ICU", "Emergency", "Surgery", "Trauma"],
-      lastUpdated: "2 minutes ago",
-      rating: 4.8,
-      distance: "0.5 miles"
-    },
-    {
-      id: 2,
-      name: "Metropolitan Medical Center",
-      city: "New York",
-      availableBeds: 8,
-      totalBeds: 150,
-      facilities: ["ICU", "Emergency", "Specialized", "Surgery"],
-      lastUpdated: "5 minutes ago",
-      rating: 4.6,
-      distance: "1.2 miles"
-    },
-    {
-      id: 3,
-      name: "Downtown Healthcare Hub",
-      city: "Brooklyn",
-      availableBeds: 25,
-      totalBeds: 80,
-      facilities: ["Emergency", "Urgent Care", "Surgery"],
-      lastUpdated: "3 minutes ago",
-      rating: 4.5,
-      distance: "2.1 miles"
-    },
-    {
-      id: 4,
-      name: "Regional Medical Institute",
-      city: "Queens",
-      availableBeds: 5,
-      totalBeds: 120,
-      facilities: ["ICU", "Emergency", "Trauma", "Specialized"],
-      lastUpdated: "1 minute ago",
-      rating: 4.9,
-      distance: "3.4 miles"
-    },
-    {
-      id: 5,
-      name: "Community Health Center",
-      city: "Bronx",
-      availableBeds: 18,
-      totalBeds: 60,
-      facilities: ["Emergency", "Urgent Care"],
-      lastUpdated: "7 minutes ago",
-      rating: 4.3,
-      distance: "4.2 miles"
-    }
-  ];
+type HospitalCard = {
+  _id: string; // MongoDB gives this automatically
+  name: string;
+  city: string;
+  address: string;
+  contactNumber: string;
+  email?: string;
+  website?: string;
+  totalBeds: number;
+  availableBeds: number;
+  icuBeds?: number;
+  emergencyBeds?: number;
+  lastUpdated?: string; // or Date, depending on how you parse it
+  facilities: string[];
+  facilityStatus?: Record<string, string>; // a map of string -> string
+  medicalSpecialties: string[];
+  rating?: number;
+  notes?: string;
+}
 
-  // Filter hospitals based on selected criteria
-  const filteredHospitals = hospitals.filter(hospital => {
-    // Search query filter
-    if (searchQuery && !hospital.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
-    }
+  const fetchHospitals = async () => {
 
-    // City filter
-    if (selectedCity !== "All Cities" && hospital.city !== selectedCity) {
-      return false;
-    }
+    try {
+      const token = localStorage.getItem("authToken");
+      const query = new URLSearchParams();
 
-    // Available beds filter
-    if (showOnlyAvailable && hospital.availableBeds === 0) {
-      return false;
-    }
+      if(selectedCity !== "All Cities") query.append("city", selectedCity);
+      if(searchQuery) query.append("search", searchQuery);
+      if(showOnlyAvailable) query.append("beds", "true");
+      if(selectedFacilities.length > 0)
+        query.append("facility", selectedFacilities.join(","));
 
-    // Required facilities filter
-    if (selectedFacilities.length > 0) {
-      const hasAllRequiredFacilities = selectedFacilities.every(facility => 
-        hospital.facilities.includes(facility)
-      );
-      if (!hasAllRequiredFacilities) {
-        return false;
-      }
-    }
+      const response = await API.get(`/hospitals/filter`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: query
+      })
 
-    return true;
-  });
+      setHospitals(response.data);
+
+      
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchHospitals();
+  }, [searchQuery, selectedCity, showOnlyAvailable, selectedFacilities]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -127,20 +95,23 @@ const Results = () => {
               Hospital Search Results
             </h1>
             <p className="text-gray-600">
-              Found {filteredHospitals.length} hospitals in your area
+              Found {hospitals.length} hospitals in your area
             </p>
           </div>
         </div>
 
-        {/* Hospital Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-          {filteredHospitals.map((hospital) => (
-            <HospitalCard key={hospital.id} hospital={hospital} />
-          ))}
-        </div>
+       {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            {hospitals.map((hospital) => (
+              <HospitalCard key={hospital._id} hospital={hospital} />
+            ))}
+          </div>
+        )}
 
         {/* No results message */}
-        {filteredHospitals.length === 0 && (
+        {hospitals.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-500 text-lg mb-2">No hospitals found</div>
             <div className="text-gray-400">Try adjusting your search criteria</div>

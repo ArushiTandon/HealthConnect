@@ -7,7 +7,7 @@ const {
 const { jwtAuthMiddleware } = require('../middlewares/jwt');
 
 router.get('/filter', jwtAuthMiddleware, getHospitals);
-router.get('/:id', jwtAuthMiddleware, getHospitalById);
+router.get('/gethospital/:id', jwtAuthMiddleware, getHospitalById);
 
 
 module.exports = router;

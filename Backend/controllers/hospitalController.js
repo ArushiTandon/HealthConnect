@@ -74,7 +74,8 @@ exports.getHospitalById = async (req, res) => {
 
   try {
     const hospital = await Hospital.findById(req.params.id);
-    console.log("#######",hospital);
+    onsole.log("Fetching hospital with ID:", id); // <-- ✅ Add here
+
 
     if (!hospital) {
       return res.status(404).json({ error: 'Hospital not found' });

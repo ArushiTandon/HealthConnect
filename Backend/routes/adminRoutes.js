@@ -14,11 +14,11 @@ const onlyHospitalAdmins = (req, res, next) => {
 
 router.get('/dashboard', jwtAuthMiddleware, onlyHospitalAdmins, adminController.getHospitalDashboard);
 
-router.put('/hospital/update-beds', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateAvailableBeds);
+router.put('/update-beds', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateAvailableBeds);
 
-router.put('/hospital/update-facilities', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateFacilityStatus);
+router.put('/update-facilities', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateFacilityStatus);
 
-router.put('/hospital/update-notes', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateNotes);
+router.put('/update-notes', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateNotes);
 
 
 module.exports = router;

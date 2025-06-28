@@ -10,7 +10,5 @@ router.post('/signup', User.signUp);
 
 router.post('/login', localAuthMid, User.login);
 
-// router.get('/profile', jwtAuthMiddleware, User.profile);
-
 
 module.exports = router;
