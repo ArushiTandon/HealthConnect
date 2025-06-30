@@ -28,7 +28,7 @@ const HospitalCard = ({ hospital }) => {
   // console.log(hospital._id);
 
   const handleViewDetails = () => {
-    navigate(`gethospital/${hospital._id}`);
+    navigate(`/fetch/${hospital._id}`);
   };
 
   return (

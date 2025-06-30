@@ -9,6 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useState, useEffect } from "react";
+import { hospitalApi } from '../services/adminApi';
 
 const FilterBar = ({
   searchQuery,
@@ -24,17 +26,65 @@ const FilterBar = ({
   showOnlyAvailable,
   setShowOnlyAvailable,
 }) => {
-  const cities = ["All Cities", "New York", "Brooklyn", "Queens", "Bronx"];
-  const facilities = ["All Facilities", "ICU", "Emergency", "Surgery", "Trauma", "Urgent Care", "Specialized"];
-  const specialties = ["All Specialties", "Cardiology", "Neurology", "Orthopedics", "Pediatrics", "Oncology"];
-  const facilityCheckboxOptions = ["ICU", "Emergency", "Dialysis", "Surgery", "Trauma"];
+  const [filterOptions, setFilterOptions] = useState({
+    cities: ["All Cities"],
+    facilities: ["All Facilities"],
+    specialties: ["All Specialties"],
+    facilityCheckboxOptions: []
+  });
 
-  const handleFacilityCheckbox = (facility, checked) => {
-    if (checked) {
-      setSelectedFacilities([...selectedFacilities, facility]);
-    } else {
-      setSelectedFacilities(selectedFacilities.filter(f => f !== facility));
-    }
+  // Fetch filter options from backend
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+  try {
+    const data = await hospitalApi.getFilterOptions();
+    setFilterOptions(data);
+  } catch (error) {
+    console.error('Error fetching filter options:', error);
+        // Fallback to hardcoded options if API fails
+        setFilterOptions({
+          cities: ["All Cities", "New Delhi", "Mumbai", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad", "Jaipur"],
+          facilities: ["All Facilities", "ICU", "Emergency", "Surgery", "Dialysis", "Radiology", "Laboratory", "Pharmacy", "Blood Bank", "Ambulance"],
+          specialties: ["All Specialties", "Cardiology", "Neurology", "Orthopedics", "Pediatrics", "Oncology", "Gastroenterology", "Nephrology", "Pulmonology", "Dermatology"],
+          facilityCheckboxOptions: ["ICU", "Emergency", "Surgery", "Dialysis", "Radiology", "Laboratory", "Pharmacy", "Blood Bank"]
+        });
+      }
+    };
+
+    fetchFilterOptions();
+  }, []);
+
+  // const handleFacilityCheckbox = (facility, checked) => {
+  //   let updatedFacilities;
+  //   if (checked) {
+  //     updatedFacilities = [...selectedFacilities, facility];
+  //   } else {
+  //     updatedFacilities = selectedFacilities.filter(f => f !== facility);
+  //   }
+  //   setSelectedFacilities(updatedFacilities);
+  // };
+
+  // Handle search query change
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+  };
+
+  // Handle dropdown changes
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+  };
+
+  const handleFacilityChange = (facility) => {
+    setSelectedFacility(facility);
+  };
+
+  const handleSpecialtyChange = (specialty) => {
+    setSelectedSpecialty(specialty);
+  };
+
+  const handleAvailableBedsChange = (checked) => {
+    setShowOnlyAvailable(checked);
   };
 
   return (
@@ -49,7 +99,7 @@ const FilterBar = ({
             type="text"
             placeholder="Search hospitals..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-10 border-gray-300 focus:border-blue-500"
           />
         </div>
@@ -69,8 +119,8 @@ const FilterBar = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {cities.map((city) => (
-                <DropdownMenuItem key={city} onClick={() => setSelectedCity(city)}>
+              {filterOptions.cities.map((city) => (
+                <DropdownMenuItem key={city} onClick={() => handleCityChange(city)}>
                   {city}
                 </DropdownMenuItem>
               ))}
@@ -88,8 +138,8 @@ const FilterBar = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {facilities.map((facility) => (
-                <DropdownMenuItem key={facility} onClick={() => setSelectedFacility(facility)}>
+              {filterOptions.facilities.map((facility) => (
+                <DropdownMenuItem key={facility} onClick={() => handleFacilityChange(facility)}>
                   {facility}
                 </DropdownMenuItem>
               ))}
@@ -107,8 +157,8 @@ const FilterBar = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {specialties.map((specialty) => (
-                <DropdownMenuItem key={specialty} onClick={() => setSelectedSpecialty(specialty)}>
+              {filterOptions.specialties.map((specialty) => (
+                <DropdownMenuItem key={specialty} onClick={() => handleSpecialtyChange(specialty)}>
                   {specialty}
                 </DropdownMenuItem>
               ))}
@@ -118,10 +168,10 @@ const FilterBar = ({
       </div>
 
       {/* Facility Checkboxes */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-700 mb-3">Required Facilities</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {facilityCheckboxOptions.map((facility) => (
+          {filterOptions.facilityCheckboxOptions.map((facility) => (
             <div key={facility} className="flex items-center space-x-2">
               <Checkbox
                 id={facility}
@@ -137,14 +187,14 @@ const FilterBar = ({
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Toggle Switch */}
       <div className="flex items-center space-x-3">
         <Switch
           id="available-beds"
           checked={showOnlyAvailable}
-          onCheckedChange={setShowOnlyAvailable}
+          onCheckedChange={handleAvailableBedsChange}
         />
         <label
           htmlFor="available-beds"

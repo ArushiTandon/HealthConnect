@@ -38,7 +38,7 @@ const App = () => (
               }
             />
             <Route
-              path="gethospital/:id"
+              path="/fetch/:id"
               element={
                 <ProtectedRoute>
                   <HospitalProfile />

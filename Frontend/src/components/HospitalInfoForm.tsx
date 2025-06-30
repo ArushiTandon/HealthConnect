@@ -20,7 +20,7 @@ export function HospitalInfoForm({ onUpdate, dashboardData }: HospitalInfoFormPr
     phone: "",
     email: "",
     website: "",
-    description: "",
+    notes: "",
     emergencyPhone: "",
     departments: ""
   });
@@ -33,7 +33,7 @@ export function HospitalInfoForm({ onUpdate, dashboardData }: HospitalInfoFormPr
       phone: dashboardData.contactNumber || "",
       email: dashboardData.email || "",
       website: dashboardData.website || "",
-      description: dashboardData.notes || "",
+      notes: dashboardData.notes || "",
       emergencyPhone: dashboardData.contactNumber || "",
       departments: dashboardData.medicalSpecialties?.join(", ") || ""
     });
@@ -49,8 +49,8 @@ export function HospitalInfoForm({ onUpdate, dashboardData }: HospitalInfoFormPr
   const handleSave = async () => {
     try {
       // Update notes (description) via API
-      if (hospitalInfo.description !== dashboardData.notes) {
-        await adminApi.updateNotes(hospitalInfo.description);
+      if (hospitalInfo.notes !== dashboardData.notes) {
+        await adminApi.updateNotes(hospitalInfo.notes);
       }
       
       onUpdate();
@@ -79,7 +79,7 @@ export function HospitalInfoForm({ onUpdate, dashboardData }: HospitalInfoFormPr
         <Card>
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Hospital name and description</CardDescription>
+            <CardDescription>Hospital name and notes</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -94,11 +94,11 @@ export function HospitalInfoForm({ onUpdate, dashboardData }: HospitalInfoFormPr
               <p className="text-sm text-gray-500 mt-1">Contact system admin to change hospital name</p>
             </div>
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="notes">notes</Label>
               <Textarea
-                id="description"
-                value={hospitalInfo.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                id="notes"
+                value={hospitalInfo.notes}
+                onChange={(e) => handleInputChange('notes', e.target.value)}
                 className="mt-1"
                 rows={4}
               />
@@ -203,7 +203,7 @@ export function HospitalInfoForm({ onUpdate, dashboardData }: HospitalInfoFormPr
                 phone: dashboardData.contactNumber || "",
                 email: dashboardData.email || "",
                 website: dashboardData.website || "",
-                description: dashboardData.notes || "",
+                notes: dashboardData.notes || "",
                 emergencyPhone: dashboardData.contactNumber || "",
                 departments: dashboardData.medicalSpecialties?.join(", ") || ""
               });

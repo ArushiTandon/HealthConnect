@@ -86,11 +86,11 @@ const HospitalProfile = () => {
             {/* About Section */}
             <Card>
               <CardHeader>
-                <CardTitle>About This Hospital</CardTitle>
+                <CardTitle>Notes</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed">
-                  {hospital.description || 'No description available for this hospital.'}
+                  {hospital.notes || 'No notes available for this hospital.'}
                 </p>
               </CardContent>
             </Card>

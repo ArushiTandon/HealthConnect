@@ -1,39 +1,29 @@
 const Hospital = require('../models/Hospital');
 
-// exports.updateBeds = async (req, res) => {
-//   const { id } = req.params;
-//   const { availableBeds } = req.body;
-
-//   try {
-//     const hospital = await Hospital.findById(id);
-//     if (!hospital) return res.status(404).json({ error: "Hospital not found" });
-
-//     hospital.availableBeds = availableBeds;
-//     hospital.lastUpdated = new Date();
-    
-//     await hospital.save();
-//     res.status(200).json({ message: "Bed availability updated", hospital });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
 exports.getHospitals = async (req, res) => {
-
   try {
-    const { city, facility, beds, sort, search } = req.query;
+    const { city, facility, specialty, beds, sort, search } = req.query;
 
     const filter = {};
 
-    // city match
-    if (city) {
+    // City filter
+    if (city && city !== 'All Cities') {
       filter.city = { $regex: new RegExp(city, 'i') };
     }
 
-    // facility match
     if (facility) {
-      filter.facilities = { $elemMatch: { $regex: new RegExp(facility, 'i') } };
+      if (facility !== 'All Facilities') {
+        // Split comma-separated facilities and create filter
+        const facilityArray = facility.split(',').map(f => f.trim());
+        filter.facilities = { 
+          $all: facilityArray.map(f => new RegExp(f, 'i'))
+        };
+      }
+    }
+
+    // Specialty filter
+    if (specialty && specialty !== 'All Specialties') {
+      filter.medicalSpecialties = { $elemMatch: { $regex: new RegExp(specialty, 'i') } };
     }
 
     // Filter for available beds
@@ -42,8 +32,11 @@ exports.getHospitals = async (req, res) => {
     }
 
     // Search by hospital name
-    if (search) {
-      filter.name = { $regex: new RegExp(search, 'i') };
+     if (search) {
+      filter.$or = [
+        { name: { $regex: new RegExp(search, 'i') } },
+        { city: { $regex: new RegExp(search, 'i') } }
+      ];
     }
 
     console.log('Final filter:', filter);
@@ -61,7 +54,7 @@ exports.getHospitals = async (req, res) => {
     }
 
     const hospitals = await query;
-    console.log("*****", hospitals);
+    console.log("Filtered hospitals count:", hospitals.length);
 
     res.status(200).json(hospitals);
   } catch (error) {
@@ -70,12 +63,34 @@ exports.getHospitals = async (req, res) => {
   }
 };
 
-exports.getHospitalById = async (req, res) => {
+// New endpoint to get filter options from database
+exports.getFilterOptions = async (req, res) => {
+  try {
+    // Get cities
+    const cities = await Hospital.distinct('city');
+    
+    // Get facilities
+    const facilities = await Hospital.distinct('facilities');
+    
+    
+    const specialties = await Hospital.distinct('medicalSpecialties');
 
+    res.status(200).json({
+      cities: ['All Cities', ...cities.sort()],
+      facilities: ['All Facilities', ...facilities.sort()],
+      specialties: ['All Specialties', ...specialties.sort()],
+      facilityCheckboxOptions: facilities.sort()
+    });
+  } catch (error) {
+    console.error('Error fetching filter options:', error);
+    res.status(500).json({ error: 'Failed to fetch filter options' });
+  }
+};
+
+exports.getHospitalById = async (req, res) => {
   try {
     const hospital = await Hospital.findById(req.params.id);
-    onsole.log("Fetching hospital with ID:", id); // <-- ✅ Add here
-
+    console.log("Fetching hospital with ID:", req.params.id); 
 
     if (!hospital) {
       return res.status(404).json({ error: 'Hospital not found' });

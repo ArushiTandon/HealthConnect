@@ -8,7 +8,8 @@ export const API_PATHS = {
 
     HOSPITAL: {
         GET_HOSPITALS: "/v1/hospitals/filter",
-        GET_HOSPITAL_BY_ID: (id) => `/v1/hospitals/gethospital/${id}`,
+        GET_FILTER_OPTIONS: "/v1/hospitals/filter-options",
+        GET_HOSPITAL_BY_ID: (id) => `/v1/hospitals/fetch/${id}`,
     },
 
 

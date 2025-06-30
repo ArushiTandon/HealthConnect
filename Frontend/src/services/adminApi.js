@@ -126,9 +126,22 @@ export const hospitalApi = {
     }
   },
 
+  getFilterOptions: async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.HOSPITAL.GET_FILTER_OPTIONS, {
+        headers: getAuthHeaders(),
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to fetch filter options: ${error.message}`
+      );
+    }
+  },
+
   getHospitalById: async (_id) => {
     try {
-      const response = await axiosInstance.get(API_PATHS.HOSPITAL.GET_HOSPITAL_BY_ID, {
+      const response = await axiosInstance.get(API_PATHS.HOSPITAL.GET_HOSPITAL_BY_ID(_id), {
         headers: getAuthHeaders(),
       });
       return response.data;

@@ -65,7 +65,6 @@ const AdminDashboard = () => {
     }
   }
 
-  
   const renderContent = () => {
     switch (activeSection) {
       case "beds":

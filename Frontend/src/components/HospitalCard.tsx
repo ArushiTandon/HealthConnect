@@ -52,7 +52,7 @@ const HospitalCard = ({ hospital }: HospitalCardProps) => {
   };
 
   const handleViewDetails = () => {
-    navigate(`/hospital/gethospital/${hospital._id}`);
+    navigate(`/fetch/${hospital._id}`);
   };
 
   return (

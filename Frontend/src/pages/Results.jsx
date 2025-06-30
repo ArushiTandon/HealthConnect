@@ -15,36 +15,73 @@ const Results = () => {
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
 
   const fetchHospitals = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("authToken");
-      const query = new URLSearchParams();
+      const params = {};
 
-      if(selectedCity !== "All Cities") query.append("city", selectedCity);
-      if(searchQuery) query.append("search", searchQuery);
-      if(showOnlyAvailable) query.append("beds", "true");
-      if(selectedFacilities.length > 0)
-        query.append("facility", selectedFacilities.join(","));
+      // Add parameters only if they have values
+      if (selectedCity !== "All Cities") {
+        params.city = selectedCity;
+      }
+      
+      if (selectedFacility !== "All Facilities") {
+        params.facility = selectedFacility;
+      }
+      
+      if (selectedSpecialty !== "All Specialties") {
+        params.specialty = selectedSpecialty;
+      }
+      
+      if (searchQuery.trim()) {
+        params.search = searchQuery.trim();
+      }
+      
+      if (showOnlyAvailable) {
+        params.beds = "true";
+      }
+      
+      // Handle multiple facilities from checkboxes
+      if (selectedFacilities.length > 0) {
+        params.facility = selectedFacilities.join(",");
+      }
 
-      const response = await API.get(`/hospitals/filter`, {
+      console.log('Sending params:', params);
+
+      const response = await API.get("/hospitals/filter", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        params: query
-      })
+        params: params
+      });
 
       setHospitals(response.data);
-
-      
     } catch (error) {
       console.error("Error fetching hospitals:", error);
+      setHospitals([]);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
+  // Debounce search query
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchHospitals();
+    }, searchQuery ? 300 : 0); // Debounce search, but fetch immediately for other filters
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  // Fetch immediately when other filters change
   useEffect(() => {
     fetchHospitals();
-  }, [searchQuery, selectedCity, showOnlyAvailable, selectedFacilities]);
+  }, [selectedCity, selectedFacility, selectedSpecialty, selectedFacilities, showOnlyAvailable]);
+
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchHospitals();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -78,8 +115,11 @@ const Results = () => {
           </div>
         </div>
 
-       {loading ? (
-          <p>Loading...</p>
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2">Loading hospitals...</span>
+          </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             {hospitals.map((hospital) => (
@@ -89,7 +129,7 @@ const Results = () => {
         )}
 
         {/* No results message */}
-        {hospitals.length === 0 && (
+        {!loading && hospitals.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-500 text-lg mb-2">No hospitals found</div>
             <div className="text-gray-400">Try adjusting your search criteria</div>
