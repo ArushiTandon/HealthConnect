@@ -54,7 +54,7 @@ const handleSubmit = async (e) => {
     console.log("Logged in user:", user);
 
 
-    // No navigation here — it will be handled in useEffect
+    
   } catch (error) {
     console.error('Login error:', error);
     toast({
