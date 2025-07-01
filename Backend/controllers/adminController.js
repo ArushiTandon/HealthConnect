@@ -1,7 +1,6 @@
 const Hospital = require('../models/Hospital');
 
 exports.getHospitalDashboard = async (req, res) => {
-  
   try {
     const hospital = await Hospital.findById(req.user.hospitalId);
 
@@ -46,7 +45,6 @@ exports.getHospitalDashboard = async (req, res) => {
   }
 };
 
-
 exports.updateAvailableBeds = async (req, res) => {
   const { availableBeds } = req.body;
 
@@ -77,12 +75,16 @@ exports.updateAvailableBeds = async (req, res) => {
   }
 };
 
-
 exports.updateFacilityStatus = async (req, res) => {
   const { facility, status } = req.body;
 
+  // Validate input
   if (!facility || !status) {
     return res.status(400).json({ error: 'facility and status are required' });
+  }
+
+  if (!['Available', 'Unavailable'].includes(status)) {
+    return res.status(400).json({ error: 'status must be either "Available" or "Unavailable"' });
   }
 
   try {
@@ -91,14 +93,27 @@ exports.updateFacilityStatus = async (req, res) => {
       return res.status(404).json({ error: 'Hospital not found for this admin' });
     }
 
+    // Initialize facilityStatus if it doesn't exist
+    if (!hospital.facilityStatus) {
+      hospital.facilityStatus = new Map();
+    }
+
+    // Update the facility status
     hospital.facilityStatus.set(facility, status);
     hospital.lastUpdated = new Date();
 
     await hospital.save();
 
+    // Return the updated facility status
+    const facilityStatusObj = {};
+    for (let [key, value] of hospital.facilityStatus) {
+      facilityStatusObj[key] = value;
+    }
+
     res.status(200).json({
       message: `Facility status for "${facility}" updated to "${status}"`,
-      facilityStatus: hospital.facilityStatus
+      facilityStatus: facilityStatusObj,
+      lastUpdated: hospital.lastUpdated
     });
   } catch (err) {
     console.error('Error updating facility status:', err);
@@ -126,10 +141,37 @@ exports.updateNotes = async (req, res) => {
 
     res.status(200).json({
       message: 'Notes updated successfully',
-      notes: hospital.notes
+      notes: hospital.notes,
+      lastUpdated: hospital.lastUpdated
     });
   } catch (err) {
     console.error('Error updating notes:', err);
     res.status(500).json({ error: 'Server error while updating notes' });
+  }
+};
+
+// Add a new endpoint to get all facilities with their status
+exports.getFacilityStatus = async (req, res) => {
+  try {
+    const hospital = await Hospital.findById(req.user.hospitalId);
+    if (!hospital) {
+      return res.status(404).json({ error: 'Hospital not found for this admin' });
+    }
+
+    const facilityStatusObj = {};
+    if (hospital.facilityStatus) {
+      for (let [key, value] of hospital.facilityStatus) {
+        facilityStatusObj[key] = value;
+      }
+    }
+
+    res.status(200).json({
+      facilityStatus: facilityStatusObj,
+      facilities: hospital.facilities,
+      lastUpdated: hospital.lastUpdated
+    });
+  } catch (err) {
+    console.error('Error fetching facility status:', err);
+    res.status(500).json({ error: 'Server error while fetching facility status' });
   }
 };

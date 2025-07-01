@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const user = require('../models/User');
 const adminController = require('../controllers/adminController');
 const { jwtAuthMiddleware } = require('../middlewares/jwt');
 
@@ -17,6 +16,8 @@ router.get('/dashboard', jwtAuthMiddleware, onlyHospitalAdmins, adminController.
 router.put('/update-beds', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateAvailableBeds);
 
 router.put('/update-facilities', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateFacilityStatus);
+
+router.get('/facility-status', jwtAuthMiddleware, onlyHospitalAdmins, adminController.getFacilityStatus);
 
 router.put('/update-notes', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateNotes);
 

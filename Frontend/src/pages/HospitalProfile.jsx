@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Phone, Mail, MapPin, Check, X, Bed, Users } from "lucide-react";
+import { ArrowLeft, Phone, Mail, MapPin, Check, X, Bed, Users, AlertCircle } from "lucide-react";
 import { Button } from "../components/ui/button.jsx";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.jsx";
 import API from "../lib/axios";
@@ -11,39 +11,102 @@ const HospitalProfile = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [hospital, setHospital] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchHospital = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("authToken");
         const response = await axiosInstance.get(API_PATHS.HOSPITAL.GET_HOSPITAL_BY_ID(id), {
-          
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setHospital(response.data);
+        setError(null);
       } catch (error) {
         console.error("Error fetching hospital data:", error);
-        alert("Failed to load hospital data. Please try again later.");
+        setError("Failed to load hospital data. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchHospital();
   }, [id]);
 
-  if (!hospital) return <p>Loading...</p>;
+  if (loading) return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading hospital information...</p>
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+      <div className="text-center">
+        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+        <p className="text-red-600 mb-4">{error}</p>
+        <Button onClick={() => navigate("/fetch")} variant="outline">
+          Back to Hospital List
+        </Button>
+      </div>
+    </div>
+  );
+
+  if (!hospital) return null;
 
   // Calculate occupancy rate
   const occupancyRate = hospital.totalBeds > 0 
     ? Math.round(((hospital.totalBeds - hospital.availableBeds) / hospital.totalBeds) * 100)
     : 0;
 
+  // Get facility availability status properly
+  const getFacilityStatus = (facilityName) => {
+    if (!hospital.facilityStatus) {
+      return true; // Default to available if no status information
+    }
+
+    // Check for exact match first
+    if (hospital.facilityStatus[facilityName] !== undefined) {
+      return hospital.facilityStatus[facilityName] === 'Available';
+    }
+
+    // Check for common facility name variations
+    const facilityLower = facilityName.toLowerCase();
+    const statusEntries = Object.entries(hospital.facilityStatus);
+    
+    for (const [key, value] of statusEntries) {
+      const keyLower = key.toLowerCase();
+      
+      // Handle common mappings
+      if (
+        (facilityLower === 'emergency' && keyLower === 'emergency department') ||
+        (facilityLower === 'pharmacy' && keyLower === 'pharmacy') ||
+        (facilityLower === 'maternity' && keyLower === 'maternity') ||
+        (facilityLower === keyLower)
+      ) {
+        return value === 'Available';
+      }
+    }
+
+    // If no match found, default to available
+    return true;
+  };
+
   // Transform facilities array to objects with availability status
-  const facilitiesWithStatus = hospital.facilities.map((facility) => ({
+  const facilitiesWithStatus = hospital.facilities ? hospital.facilities.map((facility) => ({
     name: facility,
-    available: hospital.facilityStatus?.[facility] === 'available' || Math.random() > 0.5 // Fallback to random if no status
-  }));
+    available: getFacilityStatus(facility)
+  })) : [];
+
+  // Separate available and unavailable facilities
+  const availableFacilities = facilitiesWithStatus.filter(f => f.available);
+  const unavailableFacilities = facilitiesWithStatus.filter(f => !f.available);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -68,6 +131,11 @@ const HospitalProfile = () => {
                 <MapPin className="h-5 w-5 mr-2" />
                 <span>{hospital.address}</span>
               </div>
+              {hospital.lastUpdated && (
+                <div className="text-sm text-gray-500">
+                  Last updated: {new Date(hospital.lastUpdated).toLocaleString()}
+                </div>
+              )}
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-blue-600">
@@ -141,43 +209,84 @@ const HospitalProfile = () => {
               </CardContent>
             </Card>
 
-            {/* Facilities */}
+            {/* Available Facilities */}
             <Card>
               <CardHeader>
-                <CardTitle>Facility Availability</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Available Facilities</span>
+                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                    {availableFacilities.length} Available
+                  </span>
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {facilitiesWithStatus.map((facility, index) => (
-                    <div
-                      key={`${facility.name}-${index}`}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <span className="font-medium text-gray-900">
-                        {facility.name}
-                      </span>
-                      <div className="flex items-center">
-                        {facility.available ? (
-                          <>
-                            <Check className="h-5 w-5 text-green-600 mr-2" />
-                            <span className="text-green-600 text-sm font-medium">
-                              Available
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <X className="h-5 w-5 text-red-600 mr-2" />
-                            <span className="text-red-600 text-sm font-medium">
-                              Unavailable
-                            </span>
-                          </>
-                        )}
+                {availableFacilities.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {availableFacilities.map((facility, index) => (
+                      <div
+                        key={`available-${facility.name}-${index}`}
+                        className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
+                      >
+                        <span className="font-medium text-gray-900">
+                          {facility.name}
+                        </span>
+                        <div className="flex items-center">
+                          <Check className="h-5 w-5 text-green-600 mr-2" />
+                          <span className="text-green-600 text-sm font-medium">
+                            Available
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">No facilities are currently available</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
+
+            {/* Unavailable Facilities (Only show if there are any) */}
+            {unavailableFacilities.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Temporarily Unavailable Facilities</span>
+                    <span className="text-sm bg-red-100 text-red-800 px-2 py-1 rounded-full">
+                      {unavailableFacilities.length} Unavailable
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {unavailableFacilities.map((facility, index) => (
+                      <div
+                        key={`unavailable-${facility.name}-${index}`}
+                        className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg"
+                      >
+                        <span className="font-medium text-gray-900">
+                          {facility.name}
+                        </span>
+                        <div className="flex items-center">
+                          <X className="h-5 w-5 text-red-600 mr-2" />
+                          <span className="text-red-600 text-sm font-medium">
+                            Unavailable
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      <AlertCircle className="h-4 w-4 inline mr-2" />
+                      These facilities are temporarily unavailable. Please contact the hospital for more information.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Map Section */}
             <Card>
@@ -232,27 +341,54 @@ const HospitalProfile = () => {
               </CardContent>
             </Card>
 
-            {/* Specialties */}
+            {/* Facility Summary */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="h-5 w-5 mr-2" />
-                  Medical Specialties
-                </CardTitle>
+                <CardTitle>Facility Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {hospital.medicalSpecialties.map((specialty, index) => (
-                    <div
-                      key={`${specialty}-${index}`}
-                      className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium"
-                    >
-                      {specialty}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Total Facilities</span>
+                    <span className="font-semibold">{facilitiesWithStatus.length}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-green-600">Available Now</span>
+                    <span className="font-semibold text-green-600">{availableFacilities.length}</span>
+                  </div>
+                  {unavailableFacilities.length > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-red-600">Temporarily Unavailable</span>
+                      <span className="font-semibold text-red-600">{unavailableFacilities.length}</span>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
+
+            {/* Specialties */}
+            {hospital.medicalSpecialties && hospital.medicalSpecialties.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="h-5 w-5 mr-2" />
+                    Medical Specialties
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {hospital.medicalSpecialties.map((specialty, index) => (
+                      <div
+                        key={`${specialty}-${index}`}
+                        className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium"
+                      >
+                        {specialty}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Quick Actions */}
             <Card>

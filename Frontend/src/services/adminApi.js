@@ -15,10 +15,14 @@ const getAuthHeaders = () => {
 
 export const adminApi = {
   getDashboard: async () => {
+    
     try {
       const response = await axiosInstance.get(API_PATHS.ADMIN.DASHBOARD, {
         headers: getAuthHeaders(),
       });
+      console.log("Raw API Response:", response);
+  console.log("Response type:", typeof response);
+  console.log("Response keys:", Object.keys(response || {}));
       return response.data;
     } catch (error) {
       throw new Error(
@@ -51,6 +55,20 @@ export const adminApi = {
     } catch (error) {
       throw new Error(
         error.response?.data?.error || `Failed to update facility: ${error.message}`
+      );
+    }
+  },
+
+  getFacilityStatus: async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.ADMIN.GET_FACILITIES_STATUS,
+        { headers: getAuthHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to fetch facility status: ${error.message}`
       );
     }
   },

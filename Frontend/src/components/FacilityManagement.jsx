@@ -3,48 +3,103 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { Badge } from "./ui/badge";
-import { CheckCircle, XCircle, Activity, Heart, Stethoscope, Users, Car, Zap, Building } from "lucide-react";
+import { CheckCircle, XCircle, Activity, Heart, Stethoscope, Users, Car, Zap, Building, Ambulance, Hospital, Shield } from "lucide-react";
 import { adminApi } from "../services/adminApi";
 import { useToast } from "../hooks/use-toast";
 
 export function FacilityManagement({ onUpdate, dashboardData }) {
-  const [facilities, setFacilities] = useState([
-    { id: 'icu', name: 'ICU', available: true, icon: Heart },
-    { id: 'emergency', name: 'Emergency Room', available: true, icon: Activity },
-    { id: 'dialysis', name: 'Dialysis Center', available: true, icon: Stethoscope },
-    { id: 'maternity', name: 'Maternity Ward', available: false, icon: Users },
-    { id: 'parking', name: 'Parking Available', available: true, icon: Car },
-    { id: 'generator', name: 'Backup Generator', available: true, icon: Zap },
-    { id: 'cafeteria', name: 'Cafeteria', available: true, icon: Building },
-    { id: 'pharmacy', name: '24/7 Pharmacy', available: false, icon: Building },
-  ]);
+  // Create a mapping between display names and database keys
+  const facilityMapping = {
+    'ICU': { dbKey: 'ICU', icon: Heart },
+    'Emergency Department': { dbKey: 'Emergency Department', icon: Ambulance },
+    'Dialysis': { dbKey: 'Dialysis', icon: Stethoscope },
+    'Radiology': { dbKey: 'Radiology', icon: Activity },
+    'Blood Bank': { dbKey: 'Blood Bank', icon: Heart },
+    'Neurology': { dbKey: 'Neurology', icon: Stethoscope },
+    'Pharmacy': { dbKey: 'pharmacy', icon: Building },
+    'Maternity': { dbKey: 'maternity', icon: Users },
+    // Add more mappings as needed
+  };
 
+  const [facilities, setFacilities] = useState([]);
   const { toast } = useToast();
 
-  // Update facilities based on dashboard data
+  // Initialize facilities from dashboard data
   useEffect(() => {
+    console.log('Dashboard Data:', dashboardData); // Debug log
+    
     if (dashboardData?.facilityStatus) {
-      setFacilities(prev => 
-        prev.map(facility => ({
-          ...facility,
-          available: dashboardData.facilityStatus[facility.id] === 'available'
-        }))
-      );
+      console.log('Facility Status:', dashboardData.facilityStatus); // Debug log
+      const facilityList = [];
+      
+      // Create facility list from facilityStatus (this contains all facilities the admin can manage)
+      Object.keys(dashboardData.facilityStatus).forEach(facilityKey => {
+        // Find the display name and icon for this facility
+        let displayName = facilityKey;
+        let icon = Building;
+        
+        // Check if we have a mapping for this facility
+        const mappingEntry = Object.entries(facilityMapping).find(
+          ([name, mapping]) => mapping.dbKey === facilityKey
+        );
+        
+        if (mappingEntry) {
+          displayName = mappingEntry[0];
+          icon = mappingEntry[1].icon;
+        } else {
+          // If no mapping found, try to make a nice display name
+          displayName = facilityKey.charAt(0).toUpperCase() + facilityKey.slice(1);
+          
+          // Assign appropriate icons based on facility name
+          const lowerKey = facilityKey.toLowerCase();
+          if (lowerKey.includes('icu')) icon = Heart;
+          else if (lowerKey.includes('emergency')) icon = Ambulance;
+          else if (lowerKey.includes('dialysis')) icon = Stethoscope;
+          else if (lowerKey.includes('maternity')) icon = Users;
+          else if (lowerKey.includes('pharmacy')) icon = Building;
+          else if (lowerKey.includes('neurology')) icon = Stethoscope;
+          else if (lowerKey.includes('radiology')) icon = Activity;
+        }
+        
+        facilityList.push({
+          id: facilityKey,
+          name: displayName,
+          available: dashboardData.facilityStatus[facilityKey] === 'Available' || 
+                    dashboardData.facilityStatus[facilityKey] === 'available',
+          icon: icon
+        });
+      });
+
+      console.log('Generated Facility List:', facilityList); // Debug log
+      setFacilities(facilityList);
+    } else {
+      // Fallback: If dashboardData is not available, show some default facilities
+      console.log('No dashboard data, using fallback facilities');
+      const defaultFacilities = [
+        { id: 'ICU', name: 'ICU', available: true, icon: Heart },
+        { id: 'Emergency Department', name: 'Emergency Department', available: true, icon: Ambulance },
+        { id: 'Dialysis', name: 'Dialysis', available: true, icon: Stethoscope },
+        { id: 'Neurology', name: 'Neurology', available: true, icon: Stethoscope },
+        { id: 'pharmacy', name: 'Pharmacy', available: false, icon: Building },
+        { id: 'maternity', name: 'Maternity', available: false, icon: Users },
+      ];
+      setFacilities(defaultFacilities);
     }
   }, [dashboardData]);
 
-  const toggleFacility = async (id) => {
-    const facility = facilities.find(f => f.id === id);
+  const toggleFacility = async (facilityId) => {
+    const facility = facilities.find(f => f.id === facilityId);
     if (!facility) return;
 
-    const newStatus = facility.available ? 'unavailable' : 'available';
+    const newStatus = facility.available ? 'Unavailable' : 'Available';
 
     try {
-      await adminApi.updateFacilityStatus(id, newStatus);
+
+      await adminApi.updateFacilityStatus(facilityId, newStatus);
       
       setFacilities(prev => 
         prev.map(f => 
-          f.id === id 
+          f.id === facilityId 
             ? { ...f, available: !f.available }
             : f
         )
@@ -55,7 +110,7 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
         description: `${facility.name} status updated successfully`,
       });
 
-      onUpdate();
+      if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Error updating facility:', error);
       toast({
@@ -131,7 +186,9 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
               <div className="text-sm text-gray-600">Inactive Facilities</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{Math.round((activeCount / facilities.length) * 100)}%</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {facilities.length > 0 ? Math.round((activeCount / facilities.length) * 100) : 0}%
+              </div>
               <div className="text-sm text-gray-600">Availability Rate</div>
             </div>
             <div className="text-center">

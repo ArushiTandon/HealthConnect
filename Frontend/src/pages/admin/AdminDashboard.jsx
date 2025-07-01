@@ -1,18 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button.jsx";
-// import { Input } from "../components/ui/input";
-// import { Label } from "../components/ui/label";
-// import { Switch } from "../components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card.jsx";
 import { 
-//   Sidebar, 
-//   SidebarContent, 
-//   SidebarGroup, 
-//   SidebarGroupContent, 
-//   SidebarGroupLabel, 
-//   SidebarMenu, 
-//   SidebarMenuButton, 
-//   SidebarMenuItem, 
   SidebarProvider,
   SidebarTrigger,
   SidebarInset
@@ -23,13 +12,15 @@ import { FacilityManagement } from "../../components/FacilityManagement.jsx";
 import { HospitalInfoForm } from "../../components/HospitalInfoForm.jsx";
 import { Calendar, Clock } from "lucide-react";
 import { adminApi } from "../../services/adminApi.js";
+import { useToast } from "../../hooks/use-toast"; // Add this import
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleString());
   const [dashboardData, setDashboardData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const { toast } = useToast(); // Add this
 
-  
   useEffect(() => {
     // Fetch initial dashboard data
     getDashboardData();
@@ -47,7 +38,7 @@ const AdminDashboard = () => {
   };
 
   const getDashboardData = async () => {
-    
+    setIsLoading(true); // Set loading state
     try {
       let response = await adminApi.getDashboard();
       console.log("Dashboard Data:", response);
@@ -58,23 +49,57 @@ const AdminDashboard = () => {
       console.error("Error fetching dashboard data:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Login failed",
+        description: error instanceof Error ? error.message : "Failed to fetch dashboard data",
         variant: "destructive",
       });
       
+    } finally {
+      setIsLoading(false); // Always set loading to false
     }
   }
 
   const renderContent = () => {
+    // Show loading for all sections if dashboard data is loading
+    if (isLoading) {
+      return (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-8 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     switch (activeSection) {
       case "beds":
         return <BedManagement onUpdate={updateTimestamp} dashboardData={dashboardData} />;
       case "facilities":
-        return <FacilityManagement onUpdate={updateTimestamp} />;
+        return <FacilityManagement onUpdate={updateTimestamp} dashboardData={dashboardData} />;
       case "hospital-info":
-        return <HospitalInfoForm onUpdate={updateTimestamp}  />;
+        return <HospitalInfoForm onUpdate={updateTimestamp} />;
       default:
-        if (!dashboardData) return <p>Loading...</p>;
+        if (!dashboardData) {
+          return (
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-center text-gray-500">No dashboard data available. Please try refreshing the page.</p>
+                <div className="flex justify-center mt-4">
+                  <Button onClick={getDashboardData}>Retry</Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        }
 
         return (
           <div className="space-y-6">
@@ -84,8 +109,8 @@ const AdminDashboard = () => {
                   <CardTitle className="text-lg">Total Beds</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-600">{dashboardData.totalBeds}</div>
-                  <p className="text-sm text-gray-600">Available: {dashboardData.availableBeds}</p>
+                  <div className="text-3xl font-bold text-blue-600">{dashboardData.totalBeds || 0}</div>
+                  <p className="text-sm text-gray-600">Available: {dashboardData.availableBeds || 0}</p>
                 </CardContent>
               </Card>
               <Card>
@@ -102,10 +127,10 @@ const AdminDashboard = () => {
                   <CardTitle className="text-lg">Emergency Status</CardTitle>
                 </CardHeader>
                 <CardContent>
-                   <div className={`text-3xl font-bold ${dashboardData.metrics?.criticalOccupancy ? 'text-red-600' : 'text-green-600'}`}>
-              {dashboardData.metrics?.criticalOccupancy ? 'Critical' : 'Active'}
-            </div>
-                  <p className="text-sm text-gray-600">Emergency Beds: {dashboardData.emergencyBeds}</p>
+                  <div className={`text-3xl font-bold ${dashboardData.metrics?.criticalOccupancy ? 'text-red-600' : 'text-green-600'}`}>
+                    {dashboardData.metrics?.criticalOccupancy ? 'Critical' : 'Active'}
+                  </div>
+                  <p className="text-sm text-gray-600">Emergency Beds: {dashboardData.emergencyBeds || 0}</p>
                 </CardContent>
               </Card>
             </div>
@@ -135,7 +160,11 @@ const AdminDashboard = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
-        <AdminSidebar activeSection={activeSection} setActiveSection={setActiveSection} hospitalName={dashboardData?.hospitalName} />
+        <AdminSidebar 
+          activeSection={activeSection} 
+          setActiveSection={setActiveSection} 
+          hospitalName={dashboardData?.hospitalName || "Loading..."} 
+        />
         <SidebarInset>
           <div className="flex-1 p-6">
             <div className="flex items-center justify-between mb-6">

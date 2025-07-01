@@ -25,11 +25,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Debug Element - This should be very visible if Tailwind is working
-      <div className="fixed top-4 right-4 z-50 bg-red-500 text-white p-4 rounded-lg shadow-lg">
-        <p className="text-sm font-bold">TAILWIND TEST</p>
-        <p className="text-xs">Red bg, white text</p>
-      </div> */}
       
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -81,7 +76,7 @@ const Index = () => {
                     <MapPin className="h-5 w-5 text-gray-400" />
                   </div>
                   <Input 
-                    placeholder="Enter your location (e.g., New York, NY)" 
+                    placeholder="Enter your location (e.g., Pune)" 
                     className="pl-10 h-12 text-lg border-gray-300 focus:border-blue-500"
                   />
                 </div>
