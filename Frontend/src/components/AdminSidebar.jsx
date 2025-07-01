@@ -74,15 +74,18 @@ export function AdminSidebar({ activeSection, setActiveSection, hospitalName}) {
       </SidebarContent>
       
       <SidebarFooter className="p-4">
-        <Button variant="ghost" className="w-full justify-start">
-          <LogOut className="h-4 w-4 mr-2" 
-           onClick={() => {
+        <Button
+  variant="ghost"
+  className="w-full justify-start"
+  onClick={() => {
     localStorage.removeItem("authToken");
     window.location.href = "/login";
   }}
-  />
-          Sign Out
-        </Button>
+>
+  <LogOut className="h-4 w-4 mr-2" />
+  Sign Out
+</Button>
+
       </SidebarFooter>
     </Sidebar>
   );
