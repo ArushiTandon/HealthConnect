@@ -12,7 +12,7 @@ import { FacilityManagement } from "../../components/FacilityManagement.jsx";
 import { HospitalInfoForm } from "../../components/HospitalInfoForm.jsx";
 import { Calendar, Clock } from "lucide-react";
 import { adminApi } from "../../services/adminApi.js";
-import { useToast } from "../../hooks/use-toast"; // Add this import
+import { useToast } from "../../hooks/use-toast"; 
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
@@ -86,7 +86,7 @@ const AdminDashboard = () => {
       case "facilities":
         return <FacilityManagement onUpdate={updateTimestamp} dashboardData={dashboardData} />;
       case "hospital-info":
-        return <HospitalInfoForm onUpdate={updateTimestamp} />;
+        return <HospitalInfoForm onUpdate={updateTimestamp} dashboardData={dashboardData} />;
       default:
         if (!dashboardData) {
           return (
@@ -145,7 +145,7 @@ const AdminDashboard = () => {
                   Update Bed Availability
                 </Button>
                 <Button onClick={() => setActiveSection("facilities")} variant="outline">
-                  Manage Facilities
+                  Update Facilities
                 </Button>
                 <Button onClick={() => setActiveSection("hospital-info")} variant="outline">
                   Update Hospital Info

@@ -121,12 +121,16 @@ exports.updateFacilityStatus = async (req, res) => {
   }
 };
 
-exports.updateNotes = async (req, res) => {
-  const { notes } = req.body;
-
-  if (!notes) {
-    return res.status(400).json({ error: 'notes field is required' });
-  }
+exports.updateHospitalInfo = async (req, res) => {
+  const { 
+    name, 
+    address, 
+    contactNumber, 
+    email, 
+    website, 
+    notes,
+    medicalSpecialties 
+  } = req.body;
 
   try {
     const hospital = await Hospital.findById(req.user.hospitalId);
@@ -134,23 +138,50 @@ exports.updateNotes = async (req, res) => {
       return res.status(404).json({ error: 'Hospital not found for this admin' });
     }
 
-    hospital.notes = notes;
+  
+    if (name !== undefined) hospital.name = name;
+    if (address !== undefined) hospital.address = address;
+    if (contactNumber !== undefined) hospital.contactNumber = contactNumber;
+    if (email !== undefined) hospital.email = email;
+    if (website !== undefined) hospital.website = website;
+    if (notes !== undefined) hospital.notes = notes;
+    
+    
+    if (medicalSpecialties !== undefined) {
+      if (typeof medicalSpecialties === 'string') {
+        hospital.medicalSpecialties = medicalSpecialties
+          .split(',')
+          .map(specialty => specialty.trim())
+          .filter(specialty => specialty.length > 0);
+      } else if (Array.isArray(medicalSpecialties)) {
+        hospital.medicalSpecialties = medicalSpecialties;
+      }
+    }
+
     hospital.lastUpdated = new Date();
 
     await hospital.save();
 
     res.status(200).json({
-      message: 'Notes updated successfully',
-      notes: hospital.notes,
-      lastUpdated: hospital.lastUpdated
+      message: 'Hospital information updated successfully',
+      hospital: {
+        name: hospital.name,
+        address: hospital.address,
+        contactNumber: hospital.contactNumber,
+        email: hospital.email,
+        website: hospital.website,
+        notes: hospital.notes,
+        medicalSpecialties: hospital.medicalSpecialties,
+        lastUpdated: hospital.lastUpdated
+      }
     });
   } catch (err) {
-    console.error('Error updating notes:', err);
-    res.status(500).json({ error: 'Server error while updating notes' });
+    console.error('Error updating hospital info:', err);
+    res.status(500).json({ error: 'Server error while updating hospital information' });
   }
 };
 
-// Add a new endpoint to get all facilities with their status
+
 exports.getFacilityStatus = async (req, res) => {
   try {
     const hospital = await Hospital.findById(req.user.hospitalId);

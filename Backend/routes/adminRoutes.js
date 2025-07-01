@@ -19,7 +19,7 @@ router.put('/update-facilities', jwtAuthMiddleware, onlyHospitalAdmins, adminCon
 
 router.get('/facility-status', jwtAuthMiddleware, onlyHospitalAdmins, adminController.getFacilityStatus);
 
-router.put('/update-notes', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateNotes);
+router.put('/update-info', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateHospitalInfo);
 
 
 module.exports = router;

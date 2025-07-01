@@ -18,7 +18,7 @@ export const API_PATHS = {
         UPDATE_BEDS: "/v1/admin/update-beds",
         UPDATE_FACILITIES: "/v1/admin/update-facilities",
         GET_FACILITIES_STATUS: "/v1/admin/facility-status",
-        UPDATE_NOTES: "/v1/admin/update-notes",
+        UPDATE_INFO: "/v1/admin/update-info",
     },
 
 };

@@ -73,11 +73,11 @@ export const adminApi = {
     }
   },
 
-  updateNotes: async (notes) => {
+  updateHospitalInfo: async (hospitalInfo) => {
     try {
       await axiosInstance.put(
-        API_PATHS.ADMIN.UPDATE_NOTES,
-        { notes },
+        API_PATHS.ADMIN.UPDATE_INFO,
+        hospitalInfo,
         { headers: getAuthHeaders() }
       );
     } catch (error) {

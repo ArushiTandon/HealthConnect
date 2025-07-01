@@ -81,7 +81,7 @@ export const adminApi = {
 
   // Update notes
   updateNotes: async (notes: string): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/admin/hospital/update-notes`, {
+    const response = await fetch(`${API_BASE_URL}/admin/hospital/update-info`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify({ notes }),

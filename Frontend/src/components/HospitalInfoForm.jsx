@@ -15,12 +15,14 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
     phone: "",
     email: "",
     website: "",
-    description: "",
+    notes: "",
     emergencyPhone: "",
     departments: ""
   });
 
-  // Update form with dashboard data
+  const [isLoading, setIsLoading] = useState(false);
+
+
   useEffect(() => {
     if (!dashboardData) return;
 
@@ -44,13 +46,23 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
   };
 
   const handleSave = async () => {
+    setIsLoading(true);
     try {
-      // Update notes (description) via API
-      if (hospitalInfo.notes !== dashboardData.notes) {
-        await adminApi.updateNotes(hospitalInfo.notes);
-      }
       
-      onUpdate();
+      const updateData = {
+        name: hospitalInfo.name,
+        address: hospitalInfo.address,
+        contactNumber: hospitalInfo.phone,
+        email: hospitalInfo.email,
+        website: hospitalInfo.website,
+        notes: hospitalInfo.notes,
+        medicalSpecialties: hospitalInfo.departments 
+      };
+
+      
+      await adminApi.updateHospitalInfo(updateData);
+      
+      onUpdate(); 
       toast({
         title: "Hospital information updated",
         description: "Your changes have been saved successfully.",
@@ -59,15 +71,35 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
       console.error('Error updating hospital info:', error);
       toast({
         title: "Error",
-        description: "Failed to update hospital information",
+        description: error.message || "Failed to update hospital information",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleDiscard = () => {
+    
+    setHospitalInfo({
+      name: dashboardData.hospitalName || "",
+      address: dashboardData.address || "",
+      phone: dashboardData.contactNumber || "",
+      email: dashboardData.email || "",
+      website: dashboardData.website || "",
+      notes: dashboardData.notes || "",
+      emergencyPhone: dashboardData.contactNumber || "",
+      departments: dashboardData.medicalSpecialties?.join(", ") || ""
+    });
+    toast({
+      title: "Changes discarded",
+      description: "All unsaved changes have been reverted.",
+    });
+  };
+
   if (!dashboardData) {
-  return <p className="text-gray-600">Loading hospital information...</p>;
-}
+    return <p className="text-gray-600">Loading hospital information...</p>;
+  }
 
   return (
     <div className="space-y-6">
@@ -90,18 +122,18 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
                 value={hospitalInfo.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 className="mt-1"
-                disabled
+                placeholder="Enter hospital name"
               />
-              <p className="text-sm text-gray-500 mt-1">Contact system admin to change hospital name</p>
             </div>
             <div>
-              <Label htmlFor="notes">notes</Label>
+              <Label htmlFor="notes">Notes</Label>
               <Textarea
                 id="notes"
                 value={hospitalInfo.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 className="mt-1"
                 rows={4}
+                placeholder="Add any additional notes or information about your hospital"
               />
             </div>
             <div>
@@ -112,10 +144,8 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
                 onChange={(e) => handleInputChange('departments', e.target.value)}
                 className="mt-1"
                 rows={3}
-                placeholder="List main departments separated by commas"
-                disabled
+                placeholder="List main departments separated by commas (e.g., Cardiology, Neurology, Emergency)"
               />
-              <p className="text-sm text-gray-500 mt-1">Contact system admin to update specialties</p>
             </div>
           </CardContent>
         </Card>
@@ -134,9 +164,8 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
                 onChange={(e) => handleInputChange('address', e.target.value)}
                 className="mt-1"
                 rows={2}
-                disabled
+                placeholder="Enter full hospital address"
               />
-              <p className="text-sm text-gray-500 mt-1">Contact system admin to change address</p>
             </div>
             <div>
               <Label htmlFor="phone">Main Phone</Label>
@@ -145,9 +174,8 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
                 value={hospitalInfo.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 className="mt-1"
-                disabled
+                placeholder="Enter main contact number"
               />
-              <p className="text-sm text-gray-500 mt-1">Contact system admin to change phone</p>
             </div>
             <div>
               <Label htmlFor="emergencyPhone">Emergency Phone</Label>
@@ -156,8 +184,9 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
                 value={hospitalInfo.emergencyPhone}
                 onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
                 className="mt-1"
-                disabled
+                placeholder="Enter emergency contact number"
               />
+              <p className="text-sm text-gray-500 mt-1">This field is for display purposes only</p>
             </div>
             <div>
               <Label htmlFor="email">Email</Label>
@@ -167,9 +196,8 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
                 value={hospitalInfo.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 className="mt-1"
-                disabled
+                placeholder="Enter hospital email address"
               />
-              <p className="text-sm text-gray-500 mt-1">Contact system admin to change email</p>
             </div>
             <div>
               <Label htmlFor="website">Website</Label>
@@ -178,9 +206,8 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
                 value={hospitalInfo.website}
                 onChange={(e) => handleInputChange('website', e.target.value)}
                 className="mt-1"
-                disabled
+                placeholder="Enter hospital website URL"
               />
-              <p className="text-sm text-gray-500 mt-1">Contact system admin to change website</p>
             </div>
           </CardContent>
         </Card>
@@ -193,26 +220,18 @@ export function HospitalInfoForm({ onUpdate, dashboardData }) {
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
-            <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
-              Save Changes
+            <Button 
+              onClick={handleSave} 
+              className="bg-blue-600 hover:bg-blue-700"
+              disabled={isLoading}
+            >
+              {isLoading ? "Saving..." : "Save Changes"}
             </Button>
-            <Button variant="outline" onClick={() => {
-              // Reset to dashboard data
-              setHospitalInfo({
-                name: dashboardData.hospitalName || "",
-                address: dashboardData.address || "",
-                phone: dashboardData.contactNumber || "",
-                email: dashboardData.email || "",
-                website: dashboardData.website || "",
-                notes: dashboardData.notes || "",
-                emergencyPhone: dashboardData.contactNumber || "",
-                departments: dashboardData.medicalSpecialties?.join(", ") || ""
-              });
-              toast({
-                title: "Changes discarded",
-                description: "All unsaved changes have been reverted.",
-              });
-            }}>
+            <Button 
+              variant="outline" 
+              onClick={handleDiscard}
+              disabled={isLoading}
+            >
               Discard Changes
             </Button>
           </div>
