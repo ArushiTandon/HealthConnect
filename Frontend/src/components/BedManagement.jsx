@@ -5,7 +5,7 @@ import { Label } from "./ui/label.jsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card.jsx";
 import { Bed, Plus, Minus } from "lucide-react";
 import { adminApi } from "../services/adminApi";
-import { useToast } from "../hooks/use-toast";
+import { useToast } from "../hooks/use-toast.js";
 
 export function BedManagement({ onUpdate, dashboardData }) {
  const [bedStats, setBedStats] = useState({

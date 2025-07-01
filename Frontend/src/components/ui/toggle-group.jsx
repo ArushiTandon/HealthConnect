@@ -1,7 +1,7 @@
 import React, { useContext, createContext, forwardRef } from "react";
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils.js";;
 import { toggleVariants } from "./toggle";
 
 // Create a context for variant and size props

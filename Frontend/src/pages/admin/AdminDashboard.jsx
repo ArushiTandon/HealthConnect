@@ -12,7 +12,7 @@ import { FacilityManagement } from "../../components/FacilityManagement.jsx";
 import { HospitalInfoForm } from "../../components/HospitalInfoForm.jsx";
 import { Calendar, Clock } from "lucide-react";
 import { adminApi } from "../../services/adminApi.js";
-import { useToast } from "../../hooks/use-toast"; 
+import { useToast } from "../../hooks/use-toast.js"; 
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");

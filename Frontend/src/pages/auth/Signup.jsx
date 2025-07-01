@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Heart, Shield, Check, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { useToast } from "../../hooks/use-toast";
+import { useToast } from "../../hooks/use-toast.js";
 
 const Signup = () => {
   const [username, setUsername] = useState("");

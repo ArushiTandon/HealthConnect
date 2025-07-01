@@ -4,7 +4,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Textarea } from "./ui/textarea";
-import { useToast } from "../hooks/use-toast";
+import { useToast } from "../hooks/use-toast.js";
 import { adminApi } from "../services/adminApi";
 
 export function HospitalInfoForm({ onUpdate, dashboardData }) {

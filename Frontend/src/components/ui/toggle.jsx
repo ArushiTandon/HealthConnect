@@ -2,7 +2,7 @@ import React, { forwardRef } from "react";
 import * as TogglePrimitive from "@radix-ui/react-toggle";
 import { cva } from "class-variance-authority";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils.js";;
 
 // Toggle style variants using class-variance-authority
 const toggleVariants = cva(

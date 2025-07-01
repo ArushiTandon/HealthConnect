@@ -5,7 +5,7 @@ import { Switch } from "./ui/switch";
 import { Badge } from "./ui/badge";
 import { CheckCircle, XCircle, Activity, Heart, Stethoscope, Users, Car, Zap, Building, Ambulance, Hospital, Shield } from "lucide-react";
 import { adminApi } from "../services/adminApi";
-import { useToast } from "../hooks/use-toast";
+import { useToast } from "../hooks/use-toast.js";
 
 export function FacilityManagement({ onUpdate, dashboardData }) {
   // Create a mapping between display names and database keys
