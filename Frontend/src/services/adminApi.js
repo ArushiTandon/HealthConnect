@@ -125,6 +125,7 @@ export const hospitalApi = {
 
       if (filters.city) params.city = filters.city;
       if (filters.facility) params.facility = filters.facility;
+      if (filters.specialty) params.specialty = filters.specialty;
       if (filters.beds) params.beds = true;
       if (filters.sort) params.sort = filters.sort;
       if (filters.search) params.search = filters.search;

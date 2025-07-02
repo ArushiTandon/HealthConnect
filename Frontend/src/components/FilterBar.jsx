@@ -54,16 +54,6 @@ const FilterBar = ({
     fetchFilterOptions();
   }, []);
 
-  // const handleFacilityCheckbox = (facility, checked) => {
-  //   let updatedFacilities;
-  //   if (checked) {
-  //     updatedFacilities = [...selectedFacilities, facility];
-  //   } else {
-  //     updatedFacilities = selectedFacilities.filter(f => f !== facility);
-  //   }
-  //   setSelectedFacilities(updatedFacilities);
-  // };
-
   // Handle search query change
   const handleSearchChange = (e) => {
     const value = e.target.value;
