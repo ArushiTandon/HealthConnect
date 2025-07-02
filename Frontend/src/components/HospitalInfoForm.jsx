@@ -127,8 +127,6 @@ export function HospitalInfoForm({ onUpdate, dashboardData, hospitalData, setHos
     }
   };
 
-  const hasUnsavedChanges = originalData && JSON.stringify(hospitalInfo) !== JSON.stringify(originalData);
-
   if (!dashboardData && !hospitalData) {
     return <p className="text-gray-600">Loading hospital information...</p>;
   }
@@ -140,11 +138,7 @@ export function HospitalInfoForm({ onUpdate, dashboardData, hospitalData, setHos
           <h2 className="text-xl font-semibold mb-2">Hospital Information</h2>
           <p className="text-gray-600">Update your hospital's basic information and contact details</p>
         </div>
-        {hasUnsavedChanges && (
-          <div className="text-sm text-orange-600 bg-orange-50 px-3 py-1 rounded-md border border-orange-200">
-            Unsaved changes
-          </div>
-        )}
+       
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -270,21 +264,18 @@ export function HospitalInfoForm({ onUpdate, dashboardData, hospitalData, setHos
             <Button 
               onClick={handleSave} 
               className="bg-blue-600 hover:bg-blue-700"
-              disabled={isLoading || !hasUnsavedChanges}
+              disabled={isLoading}
             >
               {isLoading ? "Saving..." : "Save Changes"}
             </Button>
             <Button 
               variant="outline" 
               onClick={handleDiscard}
-              disabled={isLoading || !hasUnsavedChanges}
+              disabled={isLoading}
             >
               Discard Changes
             </Button>
           </div>
-          {!hasUnsavedChanges && (
-            <p className="text-sm text-gray-500 mt-2">No changes to save</p>
-          )}
         </CardContent>
       </Card>
     </div>
