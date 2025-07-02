@@ -1,4 +1,4 @@
-import { Building, Bed, Settings, BarChart3, Hospital, LogOut } from "lucide-react";
+import { Building, Bed, Settings, BarChart3, Hospital, LogOut, ArrowLeft} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
