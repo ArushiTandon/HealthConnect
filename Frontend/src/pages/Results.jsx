@@ -107,7 +107,7 @@ const Results = () => {
               Hospital Search Results
             </h1>
             <p className="text-gray-600">
-              Found {hospitals.length} hospitals in your area
+              Found {hospitals?.length} hospitals in your area
             </p>
           </div>
         </div>
