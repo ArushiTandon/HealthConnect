@@ -6,11 +6,18 @@ exports.signUp = async (req, res) => {
     const {username, email, password, role, hospitalId } = req.body;
 
     try {
+      const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+      if (existingUser) {
+        return res.status(400).json({ error: 'Username or email already exists' });
+      }
 
-        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-        if (existingUser) {
-            return res.status(400).json({ error: 'Username or email already exists' });
+      if (role === 'hospital' && hospitalId) {
+        const existingHospitalAdmin = await User.findOne({ role: 'hospital', hospitalId });
+        
+        if (existingHospitalAdmin) {
+          return res.status(400).json({ error: 'This hospital already has an admin.' });
         }
+      }
 
         const user = await User.create({ username, email, password, role, hospitalId });
         return res.status(201).json({ userId: user._id, message: 'ACCOUNT CREATED!' });

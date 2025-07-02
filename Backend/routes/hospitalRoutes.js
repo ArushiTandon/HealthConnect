@@ -8,7 +8,7 @@ const {
 const { jwtAuthMiddleware } = require('../middlewares/jwt');
 
 router.get('/filter', jwtAuthMiddleware, getHospitals);
-router.get('/filter-options', getFilterOptions);
+router.get('/filter-options', jwtAuthMiddleware, getFilterOptions);
 router.get('/fetch/:id', jwtAuthMiddleware, getHospitalById);
 
 

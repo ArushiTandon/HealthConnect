@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
         if (error.response) {
             if (error.response.status === 401) {
                 console.warn("Unauthorized - possibly invalid token");
-                // window.location.href = "/login";
+                window.location.href = "/login";
             } else if (error.response.status === 500) {
                 console.error("Server Error:", error);
                 toast.error("Internal server error. Please try again later.");
