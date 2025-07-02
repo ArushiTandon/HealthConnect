@@ -51,8 +51,8 @@ const Results = () => {
 
       const response = await hospitalApi.getHospitals(params);
 
-
-      setHospitals(response.data);
+      
+      setHospitals(Array.isArray(response) ? response : []);
     } catch (error) {
       console.error("Error fetching hospitals:", error);
       setHospitals([]);
@@ -107,7 +107,7 @@ const Results = () => {
               Hospital Search Results
             </h1>
             <p className="text-gray-600">
-              Found {hospitals?.length} hospitals in your area
+              Found {hospitals?.length || 0} hospitals in your area
             </p>
           </div>
         </div>
@@ -119,14 +119,14 @@ const Results = () => {
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            {hospitals.map((hospital) => (
+            {Array.isArray(hospitals) && hospitals.map((hospital) => (
               <HospitalCard key={hospital._id} hospital={hospital} />
             ))}
           </div>
         )}
 
         {/* No results message */}
-        {!loading && hospitals.length === 0 && (
+        {!loading && (!hospitals || hospitals.length === 0) && (
           <div className="text-center py-12">
             <div className="text-gray-500 text-lg mb-2">No hospitals found</div>
             <div className="text-gray-400">Try adjusting your search criteria</div>
