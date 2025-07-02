@@ -1,4 +1,5 @@
 import { Building, Bed, Settings, BarChart3, Hospital, LogOut, ArrowLeft} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +38,7 @@ const menuItems = [
 ];
 
 export function AdminSidebar({ activeSection, setActiveSection, hospitalName}) {
+  const navigate = useNavigate();
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
