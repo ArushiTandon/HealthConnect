@@ -49,7 +49,7 @@ const Results = () => {
 
       console.log('Sending params:', params);
 
-      const response = await hospitalApi.getHospitals(filters);
+      const response = await hospitalApi.getHospitals(params);
 
 
       setHospitals(response.data);

@@ -20,9 +20,7 @@ export const adminApi = {
       const response = await axiosInstance.get(API_PATHS.ADMIN.DASHBOARD, {
         headers: getAuthHeaders(),
       });
-      console.log("Raw API Response:", response);
-  console.log("Response type:", typeof response);
-  console.log("Response keys:", Object.keys(response || {}));
+      
       return response.data;
     } catch (error) {
       throw new Error(
