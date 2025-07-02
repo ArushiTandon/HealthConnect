@@ -93,7 +93,7 @@ const handleSubmit = async (e) => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Role Selection */}
+              {/* Role Selection
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-gray-700">Account Type</Label>
                 <RadioGroup
@@ -115,7 +115,7 @@ const handleSubmit = async (e) => {
                     </Label>
                   </div>
                 </RadioGroup>
-              </div>
+              </div> */}
 
               {/* Email Field */}
               <div className="space-y-2">
