@@ -23,6 +23,8 @@ app.use('/v1/hospitals', require('./routes/hospitalRoutes'));
 app.use('/v1/users', require('./routes/userRoutes'));
 app.use('/v1/admin', require('./routes/adminRoutes'));
 
-app.listen(process.env.PORT, () => {
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-})
+});
