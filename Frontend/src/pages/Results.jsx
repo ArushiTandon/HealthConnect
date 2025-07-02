@@ -3,6 +3,7 @@ import API from "@/lib/axios.js";
 import ResultsHeader from "../components/ResultsHeader.jsx";
 import FilterBar from "../components/FilterBar.jsx";
 import HospitalCard from "../components/HospitalCard.jsx";
+import { hospitalApi } from "../services/adminApi.js";
 
 const Results = () => {
   const [hospitals, setHospitals] = useState([]);
@@ -48,12 +49,8 @@ const Results = () => {
 
       console.log('Sending params:', params);
 
-      const response = await API.get("/hospitals/filter", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: params
-      });
+      const response = await hospitalApi.getHospitals(filters);
+
 
       setHospitals(response.data);
     } catch (error) {
