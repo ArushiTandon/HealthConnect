@@ -53,7 +53,14 @@ export function AdminSidebar({ activeSection, setActiveSection, hospitalName}) {
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/")}
+            className="mb-4 hover:bg-blue-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
