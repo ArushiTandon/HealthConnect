@@ -24,5 +24,5 @@ app.use('/v1/users', require('./routes/userRoutes'));
 app.use('/v1/admin', require('./routes/adminRoutes'));
 
 app.listen(process.env.PORT, () => {
-    console.log('Server is running on port');
+    console.log(`Server is running on port ${PORT}`);
 })

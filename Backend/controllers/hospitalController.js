@@ -63,7 +63,7 @@ exports.getHospitals = async (req, res) => {
   }
 };
 
-// New endpoint to get filter options from database
+
 exports.getFilterOptions = async (req, res) => {
   try {
     // Get cities

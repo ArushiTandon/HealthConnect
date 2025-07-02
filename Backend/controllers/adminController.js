@@ -93,7 +93,6 @@ exports.updateFacilityStatus = async (req, res) => {
       return res.status(404).json({ error: 'Hospital not found for this admin' });
     }
 
-    // Initialize facilityStatus if it doesn't exist
     if (!hospital.facilityStatus) {
       hospital.facilityStatus = new Map();
     }
