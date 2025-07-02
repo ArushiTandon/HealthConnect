@@ -13,7 +13,7 @@ export function BedManagement({ onUpdate, dashboardData }) {
   available: 0,
   icu: { total: 0, available: 0 },
   emergency: { total: 0, available: 0 },
-  general: { total: 0, available: 0 },
+  // general: { total: 0, available: 0 },
 });
 
   const { toast } = useToast();
@@ -30,8 +30,8 @@ useEffect(() => {
   const icuAvailable = Math.floor(icuTotal * 0.25);
   const emergencyAvailable = Math.floor(emergencyTotal * 0.5);
 
-  const generalTotal = totalBeds - icuTotal - emergencyTotal;
-  const generalAvailable = availableBeds - icuAvailable - emergencyAvailable;
+  // const generalTotal = totalBeds - icuTotal - emergencyTotal;
+  // const generalAvailable = availableBeds - icuAvailable - emergencyAvailable;
 
   setBedStats({
     total: totalBeds,
@@ -44,10 +44,10 @@ useEffect(() => {
       total: emergencyTotal,
       available: emergencyAvailable,
     },
-    general: {
-      total: generalTotal,
-      available: generalAvailable,
-    },
+    // general: {
+    //   total: generalTotal,
+    //   available: generalAvailable,
+    // },
   });
 }, [dashboardData]);
 
@@ -197,13 +197,13 @@ useEffect(() => {
           icon={Bed}
         />
         
-        <BedCounter
+        {/* <BedCounter
           title="General Ward"
           total={bedStats.general.total}
           available={bedStats.general.available}
           category="general"
           icon={Bed}
-        />
+        /> */}
       </div>
 
       <Card>
