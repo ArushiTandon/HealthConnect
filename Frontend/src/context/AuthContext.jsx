@@ -68,8 +68,6 @@ export const AuthProvider = ({ children }) => {
   const signup = async (username, email, password, role, hospitalId) => {
     try {
       await authApi.signup(username, email, password, role, hospitalId);
-      // After successful signup, you might want to automatically log the user in
-      // or redirect them to the login page
     } catch (error) {
       throw error;
     }
