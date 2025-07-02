@@ -10,7 +10,7 @@ connectDB();
 
 app.use(cors({
     
-    origin: '*', 
+    origin:'https://healthconnect-frontend.onrender.com', 
     credentials: true,
 }));
 
