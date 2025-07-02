@@ -36,7 +36,7 @@ const Index = () => {
             <nav className="hidden md:flex space-x-8">
               <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Home</a>
               <a href="#footer" className="text-gray-600 hover:text-blue-600 transition-colors">About</a>
-              <a href="#footer" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
+              <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4">
                   <span className="text-gray-600">Welcome, {user?.username}</span>
@@ -100,7 +100,7 @@ const Index = () => {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 bg-white">
+        <section id="about" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">

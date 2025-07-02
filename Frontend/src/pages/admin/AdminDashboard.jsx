@@ -18,19 +18,19 @@ const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleString());
   const [dashboardData, setDashboardData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
-  const { toast } = useToast(); // Add this
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
   const [facilities, setFacilities] = useState([]);
+  const [hospitalData, setHospitalData] = useState(null);
+  const [bedData, setBedData] = useState(null);
   
 
   useEffect(() => {
-    // Fetch initial dashboard data
     getDashboardData();
     
-    // Update timestamp every minute
     const interval = setInterval(() => {
       updateTimestamp();
-    }, 60000); // 60 seconds
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -40,7 +40,7 @@ const AdminDashboard = () => {
   };
 
   const getDashboardData = async () => {
-    setIsLoading(true); // Set loading state
+    setIsLoading(true);
     try {
       let response = await adminApi.getDashboard();
       console.log("Dashboard Data:", response);
@@ -56,12 +56,11 @@ const AdminDashboard = () => {
       });
       
     } finally {
-      setIsLoading(false); // Always set loading to false
+      setIsLoading(false);
     }
   }
 
   const renderContent = () => {
-    // Show loading for all sections if dashboard data is loading
     if (isLoading) {
       return (
         <div className="space-y-6">
@@ -84,11 +83,32 @@ const AdminDashboard = () => {
 
     switch (activeSection) {
       case "beds":
-        return <BedManagement onUpdate={updateTimestamp} dashboardData={dashboardData} />;
+        return (
+          <BedManagement 
+            onUpdate={updateTimestamp} 
+            dashboardData={dashboardData} 
+            bedData={bedData}
+            setBedData={setBedData}
+          />
+        );
       case "facilities":
-        return <FacilityManagement onUpdate={updateTimestamp} dashboardData={dashboardData} facilityData={facilities} setFacilityData={setFacilities} />;
+        return (
+          <FacilityManagement 
+            onUpdate={updateTimestamp}
+            dashboardData={dashboardData} 
+            facilityData={facilities} 
+            setFacilityData={setFacilities} 
+          />
+        );
       case "hospital-info":
-        return <HospitalInfoForm onUpdate={updateTimestamp} dashboardData={dashboardData} />;
+        return (
+          <HospitalInfoForm 
+            onUpdate={updateTimestamp} 
+            dashboardData={dashboardData} 
+            hospitalData={hospitalData}
+            setHospitalData={setHospitalData}
+          />
+        );
       default:
         if (!dashboardData) {
           return (
