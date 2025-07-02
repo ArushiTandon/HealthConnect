@@ -64,8 +64,7 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
         facilityList.push({
           id: facilityKey,
           name: displayName,
-          available: dashboardData.facilityStatus[facilityKey] === 'Available' || 
-                    dashboardData.facilityStatus[facilityKey] === 'available',
+          available: dashboardData.facilityStatus[facilityKey].toLowerCase() === 'available' ,
           icon: icon
         });
       });
@@ -95,8 +94,6 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
 
     try {
 
-      await adminApi.updateFacilityStatus(facilityId, newStatus);
-      
       setFacilities(prev => 
         prev.map(f => 
           f.id === facilityId 
@@ -104,6 +101,9 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
             : f
         )
       );
+
+      await adminApi.updateFacilityStatus(facilityId, newStatus);
+      
 
       toast({
         title: "Success",
