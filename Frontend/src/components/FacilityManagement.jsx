@@ -7,7 +7,7 @@ import { CheckCircle, XCircle, Activity, Heart, Stethoscope, Users, Car, Zap, Bu
 import { adminApi } from "../services/adminApi";
 import { useToast } from "../hooks/use-toast.js";
 
-export function FacilityManagement({ onUpdate, dashboardData }) {
+export function FacilityManagement({ onUpdate, dashboardData, facilityData, setFacilityData }) {
   // Create a mapping between display names and database keys
   const facilityMapping = {
     'ICU': { dbKey: 'ICU', icon: Heart },
@@ -28,6 +28,13 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
   useEffect(() => {
     console.log('Dashboard Data:', dashboardData); // Debug log
     
+
+    if(facilityData && facilityData.length > 0){
+      setFacilities(facilityData);
+      setFacilityData(facilityData);
+      return;
+    }
+
     if (dashboardData?.facilityStatus) {
       console.log('Facility Status:', dashboardData.facilityStatus); // Debug log
       const facilityList = [];
@@ -71,7 +78,9 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
 
       console.log('Generated Facility List:', facilityList); // Debug log
       setFacilities(facilityList);
+      setFacilityData(facilityList);
     } else {
+
       // Fallback: If dashboardData is not available, show some default facilities
       console.log('No dashboard data, using fallback facilities');
       const defaultFacilities = [
@@ -83,6 +92,8 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
         { id: 'maternity', name: 'Maternity', available: false, icon: Users },
       ];
       setFacilities(defaultFacilities);
+      setFacilityData(defaultFacilities);
+
     }
   }, [dashboardData]);
 
@@ -93,14 +104,17 @@ export function FacilityManagement({ onUpdate, dashboardData }) {
     const newStatus = facility.available ? 'Unavailable' : 'Available';
 
     try {
-
-      setFacilities(prev => 
-        prev.map(f => 
+      let prevFacilityList = [...facilities];
+      let newlist = prevFacilityList.map(f => 
           f.id === facilityId 
             ? { ...f, available: !f.available }
             : f
         )
-      );
+      
+
+      setFacilities(newlist);
+      setFacilityData(newlist);
+
 
       await adminApi.updateFacilityStatus(facilityId, newStatus);
       

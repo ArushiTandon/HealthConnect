@@ -20,6 +20,8 @@ const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const { toast } = useToast(); // Add this
+  const [facilities, setFacilities] = useState([]);
+  
 
   useEffect(() => {
     // Fetch initial dashboard data
@@ -84,7 +86,7 @@ const AdminDashboard = () => {
       case "beds":
         return <BedManagement onUpdate={updateTimestamp} dashboardData={dashboardData} />;
       case "facilities":
-        return <FacilityManagement onUpdate={updateTimestamp} dashboardData={dashboardData} />;
+        return <FacilityManagement onUpdate={updateTimestamp} dashboardData={dashboardData} facilityData={facilities} setFacilityData={setFacilities} />;
       case "hospital-info":
         return <HospitalInfoForm onUpdate={updateTimestamp} dashboardData={dashboardData} />;
       default:
