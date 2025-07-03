@@ -18,7 +18,6 @@ const Results = () => {
   const fetchHospitals = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("authToken");
       const params = {};
 
       // Add parameters only if they have values

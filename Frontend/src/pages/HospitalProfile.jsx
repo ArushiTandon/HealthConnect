@@ -1,9 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Phone, Mail, MapPin, Check, X, Bed, Users, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Phone,
+  Mail,
+  MapPin,
+  Check,
+  X,
+  Bed,
+  Users,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "../components/ui/button.jsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.jsx";
-import API from "@/lib/axios.js";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card.jsx";
 import axiosInstance from "../utils/axiosInstance.js";
 import { API_PATHS } from "../utils/apiPaths.js";
 
@@ -13,17 +27,27 @@ const HospitalProfile = () => {
   const [hospital, setHospital] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showEmergency, setShowEmergency] = useState(false);
+
+  const handleGetDirections = (address) => {
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+    window.open(url, "_blank");
+  };
 
   useEffect(() => {
     const fetchHospital = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("authToken");
-        const response = await axiosInstance.get(API_PATHS.HOSPITAL.GET_HOSPITAL_BY_ID(id), {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axiosInstance.get(
+          API_PATHS.HOSPITAL.GET_HOSPITAL_BY_ID(id),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setHospital(response.data);
         setError(null);
       } catch (error) {
@@ -32,38 +56,44 @@ const HospitalProfile = () => {
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchHospital();
   }, [id]);
 
-  if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading hospital information...</p>
+  if (loading)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading hospital information...</p>
+        </div>
       </div>
-    </div>
-  );
+    );
 
-  if (error) return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
-      <div className="text-center">
-        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <p className="text-red-600 mb-4">{error}</p>
-        <Button onClick={() => navigate("/fetch")} variant="outline">
-          Back to Hospital List
-        </Button>
+  if (error)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={() => navigate("/fetch")} variant="outline">
+            Back to Hospital List
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   if (!hospital) return null;
 
   // Calculate occupancy rate
-  const occupancyRate = hospital.totalBeds > 0 
-    ? Math.round(((hospital.totalBeds - hospital.availableBeds) / hospital.totalBeds) * 100)
-    : 0;
+  const occupancyRate =
+    hospital.totalBeds > 0
+      ? Math.round(
+          ((hospital.totalBeds - hospital.availableBeds) / hospital.totalBeds) *
+            100
+        )
+      : 0;
 
   // Get facility availability status properly
   const getFacilityStatus = (facilityName) => {
@@ -73,24 +103,25 @@ const HospitalProfile = () => {
 
     // Check for exact match first
     if (hospital.facilityStatus[facilityName] !== undefined) {
-      return hospital.facilityStatus[facilityName] === 'Available';
+      return hospital.facilityStatus[facilityName] === "Available";
     }
 
     // Check for common facility name variations
     const facilityLower = facilityName.toLowerCase();
     const statusEntries = Object.entries(hospital.facilityStatus);
-    
+
     for (const [key, value] of statusEntries) {
       const keyLower = key.toLowerCase();
-      
+
       // Handle common mappings
       if (
-        (facilityLower === 'emergency' && keyLower === 'emergency department') ||
-        (facilityLower === 'pharmacy' && keyLower === 'pharmacy') ||
-        (facilityLower === 'maternity' && keyLower === 'maternity') ||
-        (facilityLower === keyLower)
+        (facilityLower === "emergency" &&
+          keyLower === "emergency department") ||
+        (facilityLower === "pharmacy" && keyLower === "pharmacy") ||
+        (facilityLower === "maternity" && keyLower === "maternity") ||
+        facilityLower === keyLower
       ) {
-        return value === 'Available';
+        return value === "Available";
       }
     }
 
@@ -99,14 +130,18 @@ const HospitalProfile = () => {
   };
 
   // Transform facilities array to objects with availability status
-  const facilitiesWithStatus = hospital.facilities ? hospital.facilities.map((facility) => ({
-    name: facility,
-    available: getFacilityStatus(facility)
-  })) : [];
+  const facilitiesWithStatus = hospital.facilities
+    ? hospital.facilities.map((facility) => ({
+        name: facility,
+        available: getFacilityStatus(facility),
+      }))
+    : [];
 
   // Separate available and unavailable facilities
-  const availableFacilities = facilitiesWithStatus.filter(f => f.available);
-  const unavailableFacilities = facilitiesWithStatus.filter(f => !f.available);
+  const availableFacilities = facilitiesWithStatus.filter((f) => f.available);
+  const unavailableFacilities = facilitiesWithStatus.filter(
+    (f) => !f.available
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -121,7 +156,7 @@ const HospitalProfile = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Hospital List
           </Button>
-          
+
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -133,13 +168,14 @@ const HospitalProfile = () => {
               </div>
               {hospital.lastUpdated && (
                 <div className="text-sm text-gray-500">
-                  Last updated: {new Date(hospital.lastUpdated).toLocaleString()}
+                  Last updated:{" "}
+                  {new Date(hospital.lastUpdated).toLocaleString()}
                 </div>
               )}
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-blue-600">
-                {hospital.rating ? `${hospital.rating}/5.0` : 'N/A'}
+                {hospital.rating ? `${hospital.rating}/5.0` : "N/A"}
               </div>
               <div className="text-sm text-gray-500">Patient Rating</div>
             </div>
@@ -158,7 +194,7 @@ const HospitalProfile = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed">
-                  {hospital.notes || 'No notes available for this hospital.'}
+                  {hospital.notes || "No notes available for this hospital."}
                 </p>
               </CardContent>
             </Card>
@@ -192,7 +228,7 @@ const HospitalProfile = () => {
                     <div className="text-sm text-gray-500">Occupancy Rate</div>
                   </div>
                 </div>
-                
+
                 {/* Progress bar */}
                 <div className="mt-6">
                   <div className="flex justify-between text-sm text-gray-600 mb-2">
@@ -200,7 +236,7 @@ const HospitalProfile = () => {
                     <span>{occupancyRate}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div 
+                    <div
                       className="bg-blue-600 h-3 rounded-full transition-all duration-300"
                       style={{ width: `${occupancyRate}%` }}
                     ></div>
@@ -242,7 +278,9 @@ const HospitalProfile = () => {
                 ) : (
                   <div className="text-center py-8">
                     <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">No facilities are currently available</p>
+                    <p className="text-gray-500">
+                      No facilities are currently available
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -281,7 +319,8 @@ const HospitalProfile = () => {
                   <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <p className="text-sm text-yellow-800">
                       <AlertCircle className="h-4 w-4 inline mr-2" />
-                      These facilities are temporarily unavailable. Please contact the hospital for more information.
+                      These facilities are temporarily unavailable. Please
+                      contact the hospital for more information.
                     </p>
                   </div>
                 </CardContent>
@@ -297,8 +336,12 @@ const HospitalProfile = () => {
                 <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
                   <div className="text-center">
                     <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500">Interactive map will be displayed here</p>
-                    <p className="text-sm text-gray-400 mt-1">{hospital.address}</p>
+                    <p className="text-gray-500">
+                      Interactive map will be displayed here
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      {hospital.address}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -317,7 +360,9 @@ const HospitalProfile = () => {
                   <Phone className="h-5 w-5 text-blue-600 mr-3" />
                   <div>
                     <div className="font-medium text-gray-900">Phone</div>
-                    <div className="text-blue-600">{hospital.contactNumber}</div>
+                    <div className="text-blue-600">
+                      {hospital.contactNumber}
+                    </div>
                   </div>
                 </div>
                 {hospital.email && (
@@ -349,17 +394,29 @@ const HospitalProfile = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Facilities</span>
-                    <span className="font-semibold">{facilitiesWithStatus.length}</span>
+                    <span className="text-sm text-gray-600">
+                      Total Facilities
+                    </span>
+                    <span className="font-semibold">
+                      {facilitiesWithStatus.length}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-green-600">Available Now</span>
-                    <span className="font-semibold text-green-600">{availableFacilities.length}</span>
+                    <span className="text-sm text-green-600">
+                      Available Now
+                    </span>
+                    <span className="font-semibold text-green-600">
+                      {availableFacilities.length}
+                    </span>
                   </div>
                   {unavailableFacilities.length > 0 && (
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-red-600">Temporarily Unavailable</span>
-                      <span className="font-semibold text-red-600">{unavailableFacilities.length}</span>
+                      <span className="text-sm text-red-600">
+                        Temporarily Unavailable
+                      </span>
+                      <span className="font-semibold text-red-600">
+                        {unavailableFacilities.length}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -367,28 +424,29 @@ const HospitalProfile = () => {
             </Card>
 
             {/* Specialties */}
-            {hospital.medicalSpecialties && hospital.medicalSpecialties.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Users className="h-5 w-5 mr-2" />
-                    Medical Specialties
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {hospital.medicalSpecialties.map((specialty, index) => (
-                      <div
-                        key={`${specialty}-${index}`}
-                        className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium"
-                      >
-                        {specialty}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {hospital.medicalSpecialties &&
+              hospital.medicalSpecialties.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Users className="h-5 w-5 mr-2" />
+                      Medical Specialties
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {hospital.medicalSpecialties.map((specialty, index) => (
+                        <div
+                          key={`${specialty}-${index}`}
+                          className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium"
+                        >
+                          {specialty}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
             {/* Quick Actions */}
             <Card>
@@ -399,12 +457,28 @@ const HospitalProfile = () => {
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
                   Schedule Appointment
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => handleGetDirections(hospital.address)}
+                >
                   Get Directions
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Emergency Contact
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setShowEmergency((prev) => !prev)}
+                >
+                  {showEmergency ? "Hide Contact" : "Emergency Contact"}
                 </Button>
+
+                {showEmergency && (
+                  <div className="text-center mt-2 text-red-600 font-semibold">
+                    Emergency Contact:{" "}
+                    {hospital.emergencyContact || hospital.contactNumber}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

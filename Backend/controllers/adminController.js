@@ -97,13 +97,11 @@ exports.updateFacilityStatus = async (req, res) => {
       hospital.facilityStatus = new Map();
     }
 
-    // Update the facility status
     hospital.facilityStatus.set(facility, status);
     hospital.lastUpdated = new Date();
 
     await hospital.save();
 
-    // Return the updated facility status
     const facilityStatusObj = {};
     for (let [key, value] of hospital.facilityStatus) {
       facilityStatusObj[key] = value;

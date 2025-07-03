@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const appointmentController = require('../controllers/appointmentController');
 const { jwtAuthMiddleware } = require('../middlewares/jwt');
 
 const onlyHospitalAdmins = (req, res, next) => {
@@ -21,6 +22,9 @@ router.get('/facility-status', jwtAuthMiddleware, onlyHospitalAdmins, adminContr
 
 router.put('/update-info', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateHospitalInfo);
 
+router.get('/all-appointments', jwtAuthMiddleware, onlyHospitalAdmins, appointmentController.getHospitalAppointments);
+
+router.patch('/update-appointment/:id', jwtAuthMiddleware, onlyHospitalAdmins, appointmentController.updateAppointmentStatus);
 
 module.exports = router;
 
