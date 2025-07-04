@@ -1,0 +1,3 @@
+TO DO:
+1. Make UI for viewing appointments.
+2. Make UI for viewing and updating status of appointments for hospital admins.

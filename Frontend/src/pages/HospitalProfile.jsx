@@ -18,8 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card.jsx";
-import axiosInstance from "../utils/axiosInstance.js";
-import { API_PATHS } from "../utils/apiPaths.js";
+import { appointment, hospitalApi } from "../services/adminApi.js";
 
 const HospitalProfile = () => {
   const navigate = useNavigate();
@@ -28,6 +27,25 @@ const HospitalProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showEmergency, setShowEmergency] = useState(false);
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [appointmentData, setAppointmentData] = useState({
+    patientName: "",
+    date: "",
+    time: "",
+    reason: "",
+  });
+
+  const handleAppointmentSubmit = async () => {
+    try {
+      await appointment.createAppointment(hospital._id, appointmentData.date, appointmentData.time, appointmentData.reason);
+
+      alert("Appointment Scheduled!");
+      setShowAppointmentForm(false);
+    } catch (err) {
+      console.error("Failed to schedule:", err);
+      alert("Failed to schedule appointment.");
+    }
+  };
 
   const handleGetDirections = (address) => {
     const encodedAddress = encodeURIComponent(address);
@@ -39,16 +57,9 @@ const HospitalProfile = () => {
     const fetchHospital = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("authToken");
-        const response = await axiosInstance.get(
-          API_PATHS.HOSPITAL.GET_HOSPITAL_BY_ID(id),
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setHospital(response.data);
+
+        const hospitalData = await hospitalApi.getHospitalById(id);
+        setHospital(hospitalData);
         setError(null);
       } catch (error) {
         console.error("Error fetching hospital data:", error);
@@ -454,7 +465,10 @@ const HospitalProfile = () => {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={() => setShowAppointmentForm(true)}
+                >
                   Schedule Appointment
                 </Button>
                 <Button
@@ -484,6 +498,60 @@ const HospitalProfile = () => {
           </div>
         </div>
       </div>
+      {showAppointmentForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Schedule Appointment</h2>
+            <div className="space-y-3">
+              <input
+                type="date"
+                className="w-full p-2 border rounded"
+                value={appointmentData.date}
+                onChange={(e) =>
+                  setAppointmentData({
+                    ...appointmentData,
+                    date: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                type="time"
+                className="w-full p-2 border rounded"
+                value={appointmentData.time}
+                onChange={(e) =>
+                  setAppointmentData({
+                    ...appointmentData,
+                    time: e.target.value,
+                  })
+                }
+              />
+
+              <textarea
+                placeholder="Reason for Appointment"
+                className="w-full p-2 border rounded"
+                value={appointmentData.reason}
+                onChange={(e) =>
+                  setAppointmentData({
+                    ...appointmentData,
+                    reason: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowAppointmentForm(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleAppointmentSubmit}>Submit</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -19,6 +19,14 @@ export const API_PATHS = {
         UPDATE_FACILITIES: "/v1/admin/update-facilities",
         GET_FACILITIES_STATUS: "/v1/admin/facility-status",
         UPDATE_INFO: "/v1/admin/update-info",
+        GET_ALL_APPOINTMENTS: "/v1/admin/all-appointments",
+        UPDATE_APPOINTMENT_STATUS: (id) => `/v1/admin/update-appointment/${id}`,
+    },  
+
+    APPOINTMENT: {
+        CREATE_APPOINTMENT: "/v1/appointment/create",
+        GET_USER_APPOINTMENT: (id) => `/v1/appointment/get-appointments/${id}`,
+        CANCEL_APPOINTMENT: (id) => '/v1/appointment/cancel/${id}',
     },
 
 };

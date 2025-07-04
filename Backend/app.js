@@ -10,8 +10,8 @@ connectDB();
 
 app.use(cors({
     
-    // origin:'https://healthconnect-frontend.onrender.com', 
-    origin: "*",
+    origin:'https://healthconnect-frontend.onrender.com', 
+    // origin: "*",
     credentials: true,
 }));
 
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/v1/hospitals', require('./routes/hospitalRoutes'));
 app.use('/v1/users', require('./routes/userRoutes'));
 app.use('/v1/admin', require('./routes/adminRoutes'));
-app.use('/v1/appointments', require('./routes/appointmentRoutes'));
+app.use('/v1/appointment', require('./routes/appointmentRoutes'));
 
 const PORT = process.env.PORT;
 

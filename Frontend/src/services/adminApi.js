@@ -84,6 +84,34 @@ export const adminApi = {
       );
     }
   },
+
+  getAllAppointments: async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.ADMIN.GET_ALL_APPOINTMENTS, {
+        headers: getAuthHeaders(),
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to fetch appointments: ${error.message}`
+      );
+    }
+  },
+
+  updateAppointmentStatus: async (appointmentId, status) => {
+    try {
+      const response = await axiosInstance.put(
+        API_PATHS.ADMIN.UPDATE_APPOINTMENT_STATUS(appointmentId),
+        { status },
+        { headers: getAuthHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to update appointment status: ${error.message}`
+      );
+    }
+  },
 };
 
 export const authApi = {
@@ -135,8 +163,6 @@ export const hospitalApi = {
         params,
       });
 
-      console.log("Hospitals API Response:", response.data);
-
       return response.data;
     } catch (error) {
       throw new Error(
@@ -172,3 +198,53 @@ export const hospitalApi = {
     }
   },
 };
+
+export const appointment = {
+  createAppointment: async (hospitalId, date, time, reason) => {
+    try {
+      
+      const response = await axiosInstance.post(API_PATHS.APPOINTMENT.CREATE_APPOINTMENT, {
+        hospitalId,
+        date,
+        time,
+        reason,
+      }, {
+        headers: getAuthHeaders(),
+      })
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to create appointment: ${error.message}`
+      );
+      
+    }
+  },
+
+  getUserAppointments: async (id) => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.APPOINTMENT.GET_USER_APPOINTMENT(id), {
+        headers: getAuthHeaders(),
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to fetch user appointments: ${error.message}`
+      );
+    }
+  },
+
+  cancelAppointment: async (appointmentId, status) => {
+    try {
+      const response = await axiosInstance.put(
+        API_PATHS.APPOINTMENT.CANCEL_APPOINTMENT(appointmentId),
+        { status },
+        { headers: getAuthHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to update appointment: ${error.message}`
+      );
+    }
+  },
+}

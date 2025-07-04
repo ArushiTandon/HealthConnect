@@ -6,7 +6,7 @@ exports.createAppointment = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const { hospitalId, date } = req.body; 
+        const { hospitalId, date, time, reason } = req.body; 
         if (!hospitalId || !date) {
             return res.status(400).json({ message: "Hospital ID and date are required" });
         }
@@ -15,6 +15,8 @@ exports.createAppointment = async (req, res) => {
             userId: userId,
             hospitalId: hospitalId,
             date: new Date(date),
+            time: time,
+            reason: reason,
             status: "Pending"
         });
 
@@ -31,7 +33,7 @@ exports.createAppointment = async (req, res) => {
     }
 }
 
-exports.getAppointmentsByUserId = async (req, res) => {
+exports.getUserAppointments = async (req, res) => {
     const userId = req.user.id;
 
     try {
@@ -45,14 +47,14 @@ exports.getAppointmentsByUserId = async (req, res) => {
     }
 }
 
-exports.updateAppointment = async (req, res) => {
+exports.cancelAppointment = async (req, res) => {
     const appointmentId = req.params.id;
-    const { date, status } = req.body;
+    const status = "Cancelled";
 
     try {
         const updatedAppointment = await Appointment.findByIdAndUpdate(
             appointmentId,
-            { date: new Date(date), status: status },
+            { status: status},
             { new: true }
         );
 
@@ -61,12 +63,12 @@ exports.updateAppointment = async (req, res) => {
         }
 
         res.status(200).json({
-            message: "Appointment updated successfully",
+            message: "Appointment cancelled successfully",
             appointment: updatedAppointment
         });
         
     } catch (error) {
-        console.error("Error updating appointment:", error);
+        console.error("Error cancelling appointment:", error);
         res.status(500).json({ message: "Internal server error" });
         
     }
@@ -75,10 +77,6 @@ exports.updateAppointment = async (req, res) => {
 // For hospital admin
 exports.getHospitalAppointments = async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-
     const hospitalId = req.user.hospitalId;
 
     const appointments = await Appointment.find({ hospitalId })
