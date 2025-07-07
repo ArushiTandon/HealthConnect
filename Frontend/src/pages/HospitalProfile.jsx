@@ -18,7 +18,8 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card.jsx";
-import { appointment, hospitalApi } from "../services/adminApi.js";
+import { appointmentApi, hospitalApi } from "../services/adminApi.js";
+import socket from "../services/socket.js";
 
 const HospitalProfile = () => {
   const navigate = useNavigate();
@@ -37,7 +38,12 @@ const HospitalProfile = () => {
 
   const handleAppointmentSubmit = async () => {
     try {
-      await appointment.createAppointment(hospital._id, appointmentData.date, appointmentData.time, appointmentData.reason);
+      await appointmentApi.createAppointment(
+        hospital._id,
+        appointmentData.date,
+        appointmentData.time,
+        appointmentData.reason
+      );
 
       alert("Appointment Scheduled!");
       setShowAppointmentForm(false);
@@ -70,6 +76,56 @@ const HospitalProfile = () => {
     };
 
     fetchHospital();
+  }, [id]);
+
+  useEffect(() => {
+    socket.emit("join-hospital-room", id);
+
+    socket.on("bedAvailabilityUpdated", (data) => {
+      if (data.hospitalId === id) {
+        setHospital((prev) => ({
+          ...prev,
+          availableBeds: data.availableBeds,
+          lastUpdated: data.lastUpdated,
+        }));
+      }
+    });
+
+    socket.on("facilityStatusUpdated", (data) => {
+  
+  if (data.hospitalId === id) {
+   
+    setHospital((prev) => {
+      const newState = {
+        ...prev,
+        facilityStatus: {
+          ...prev.facilityStatus,
+          ...data.facilityStatus,
+        },
+        lastUpdated: data.lastUpdated,
+      };
+      
+      return newState;
+    });
+  } else {
+    console.log("Hospital ID mismatch:", data.hospitalId, "vs", id);
+  }
+});
+
+    socket.on("hospitalInfoUpdated", (data) => {
+      if (data.hospitalId === id) {
+        setHospital((prev) => ({
+          ...prev,
+          ...data.updatedFields,
+          lastUpdated: data.lastUpdated,
+        }));
+      }
+    });
+
+    return () => {
+      socket.emit("leave-hospital-room", id);
+      socket.disconnect();
+    };
   }, [id]);
 
   if (loading)

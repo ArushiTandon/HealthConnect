@@ -1,8 +1,14 @@
 import axiosInstance from '../utils/axiosInstance';
 import { API_PATHS } from '../utils/apiPaths';
 
-// Get the JWT token from localStorage
-const getAuthToken = () => localStorage.getItem("authToken");
+const getAuthToken = () => {
+  try {
+    return localStorage.getItem("authToken");
+  } catch (error) {
+    console.warn("localStorage not available:", error);
+    return null;
+  }
+};
 
 // Common headers for authenticated requests
 const getAuthHeaders = () => {
@@ -13,9 +19,18 @@ const getAuthHeaders = () => {
   };
 };
 
+const validateRequired = (params, requiredFields) => {
+  const missing = requiredFields.filter(field => 
+    params[field] === undefined || params[field] === null || params[field] === ""
+  );
+  
+  if (missing.length > 0) {
+    throw new Error(`Missing required fields: ${missing.join(', ')}`);
+  }
+};
+
 export const adminApi = {
   getDashboard: async () => {
-    
     try {
       const response = await axiosInstance.get(API_PATHS.ADMIN.DASHBOARD, {
         headers: getAuthHeaders(),
@@ -30,12 +45,14 @@ export const adminApi = {
   },
 
   updateAvailableBeds: async (availableBeds) => {
+
     try {
-      await axiosInstance.put(
+      const response = await axiosInstance.put(
         API_PATHS.ADMIN.UPDATE_BEDS,
         { availableBeds },
         { headers: getAuthHeaders() }
       );
+      return response.data; 
     } catch (error) {
       throw new Error(
         error.response?.data?.error || `Failed to update beds: ${error.message}`
@@ -44,12 +61,14 @@ export const adminApi = {
   },
 
   updateFacilityStatus: async (facility, status) => {
+   
     try {
-      await axiosInstance.put(
+      const response = await axiosInstance.put(
         API_PATHS.ADMIN.UPDATE_FACILITIES,
         { facility, status },
         { headers: getAuthHeaders() }
       );
+      return response.data;
     } catch (error) {
       throw new Error(
         error.response?.data?.error || `Failed to update facility: ${error.message}`
@@ -72,15 +91,17 @@ export const adminApi = {
   },
 
   updateHospitalInfo: async (hospitalInfo) => {
+   
     try {
-      await axiosInstance.put(
+      const response = await axiosInstance.put(
         API_PATHS.ADMIN.UPDATE_INFO,
         hospitalInfo,
         { headers: getAuthHeaders() }
       );
+      return response.data;
     } catch (error) {
       throw new Error(
-        error.response?.data?.error || `Failed to update notes: ${error.message}`
+        error.response?.data?.error || `Failed to update hospital info: ${error.message}` 
       );
     }
   },
@@ -99,6 +120,9 @@ export const adminApi = {
   },
 
   updateAppointmentStatus: async (appointmentId, status) => {
+    // Input validation
+    validateRequired({ appointmentId, status }, ['appointmentId', 'status']);
+
     try {
       const response = await axiosInstance.put(
         API_PATHS.ADMIN.UPDATE_APPOINTMENT_STATUS(appointmentId),
@@ -116,6 +140,9 @@ export const adminApi = {
 
 export const authApi = {
   login: async (email, password, role) => {
+    // Input validation
+    validateRequired({ email, password, role }, ['email', 'password', 'role']);
+
     try {
       const response = await axiosInstance.post(
         API_PATHS.AUTH.LOGIN,
@@ -131,6 +158,9 @@ export const authApi = {
   },
 
   signup: async (username, email, password, role, hospitalId) => {
+    // Input validation
+    validateRequired({ username, email, password, role }, ['username', 'email', 'password', 'role']);
+
     try {
       const response = await axiosInstance.post(
         API_PATHS.AUTH.SIGNUP,
@@ -147,7 +177,7 @@ export const authApi = {
 };
 
 export const hospitalApi = {
-  getHospitals: async (filters) => {
+  getHospitals: async (filters = {}) => {
     try {
       const params = {};
 
@@ -186,6 +216,7 @@ export const hospitalApi = {
   },
 
   getHospitalById: async (_id) => {
+
     try {
       const response = await axiosInstance.get(API_PATHS.HOSPITAL.GET_HOSPITAL_BY_ID(_id), {
         headers: getAuthHeaders(),
@@ -199,10 +230,9 @@ export const hospitalApi = {
   },
 };
 
-export const appointment = {
+export const appointmentApi = { 
   createAppointment: async (hospitalId, date, time, reason) => {
     try {
-      
       const response = await axiosInstance.post(API_PATHS.APPOINTMENT.CREATE_APPOINTMENT, {
         hospitalId,
         date,
@@ -210,17 +240,17 @@ export const appointment = {
         reason,
       }, {
         headers: getAuthHeaders(),
-      })
+      });
       return response.data;
     } catch (error) {
       throw new Error(
         error.response?.data?.error || `Failed to create appointment: ${error.message}`
       );
-      
     }
   },
 
   getUserAppointments: async (id) => {
+
     try {
       const response = await axiosInstance.get(API_PATHS.APPOINTMENT.GET_USER_APPOINTMENT(id), {
         headers: getAuthHeaders(),
@@ -234,6 +264,7 @@ export const appointment = {
   },
 
   cancelAppointment: async (appointmentId, status) => {
+
     try {
       const response = await axiosInstance.put(
         API_PATHS.APPOINTMENT.CANCEL_APPOINTMENT(appointmentId),
@@ -247,4 +278,4 @@ export const appointment = {
       );
     }
   },
-}
+};

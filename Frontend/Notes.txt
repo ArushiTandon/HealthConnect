@@ -1,3 +1,5 @@
 TO DO:
 1. Make UI for viewing appointments.
 2. Make UI for viewing and updating status of appointments for hospital admins.
+3. Integrate cron + SendGrid for reminders of appointments.
+4. Integrate webSockets (Sockets.io) for real time admin - user updates.
