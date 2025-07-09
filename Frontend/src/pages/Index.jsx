@@ -43,6 +43,7 @@ const Index = () => {
                   {user?.role === 'hospital' && (
                     <Button onClick={() => navigate('/admin')} variant="outline">Dashboard</Button>
                   )}
+                  <Button onClick={() => navigate(`/get-appointments/${user?.id}`)} variant="outline">My Appointments</Button>
                   <Button onClick={handleLogout} variant="outline">Logout</Button>
                 </div>
               ) : (

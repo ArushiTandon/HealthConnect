@@ -9,11 +9,11 @@ import AdminRoute from "./components/AdminRoute.jsx";
 import Index from "./pages/Index.jsx";
 import Results from "./pages/Results.jsx";
 import HospitalProfile from "./pages/HospitalProfile.jsx";
-// import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import Login from "./pages/auth/Login.jsx";
+import UserAppointments from "./pages/UserAppointments.jsx";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +51,14 @@ const App = () => (
                 <AdminRoute>
                   <AdminDashboard />
                 </AdminRoute>
+              }
+            />
+            <Route
+              path="/get-appointments/:id"
+              element={
+                <ProtectedRoute>
+                  <UserAppointments />
+                </ProtectedRoute>
               }
             />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

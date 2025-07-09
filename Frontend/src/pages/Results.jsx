@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import API from "@/lib/axios.js";
 import ResultsHeader from "../components/ResultsHeader.jsx";
 import FilterBar from "../components/FilterBar.jsx";
 import HospitalCard from "../components/HospitalCard.jsx";

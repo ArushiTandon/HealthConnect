@@ -26,7 +26,7 @@ export const API_PATHS = {
     APPOINTMENT: {
         CREATE_APPOINTMENT: "/v1/appointment/create",
         GET_USER_APPOINTMENT: (id) => `/v1/appointment/get-appointments/${id}`,
-        CANCEL_APPOINTMENT: (id) => '/v1/appointment/cancel/${id}',
+        CANCEL_APPOINTMENT: (id) => `/v1/appointment/cancel/${id}`,
     },
 
 };
