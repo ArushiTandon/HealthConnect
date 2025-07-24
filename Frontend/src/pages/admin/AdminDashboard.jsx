@@ -12,6 +12,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from "../../components/ui/sidebar.jsx";
+import AppointmentManagement from "../../components/AppointmentManagement.jsx";
 import { AdminSidebar } from "../../components/AdminSidebar.jsx";
 import { BedManagement } from "../../components/BedManagement.jsx";
 import { FacilityManagement } from "../../components/FacilityManagement.jsx";
@@ -19,7 +20,6 @@ import { HospitalInfoForm } from "../../components/HospitalInfoForm.jsx";
 import { Calendar, Clock } from "lucide-react";
 import { adminApi } from "../../services/adminApi.js";
 import { useToast } from "../../hooks/use-toast.js";
-import socket from "../../services/socket.js";
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
@@ -91,6 +91,13 @@ const AdminDashboard = () => {
     }
 
     switch (activeSection) {
+       case "appointments":
+        return (
+          <AppointmentManagement
+            onUpdate={updateTimestamp}
+            dashboardData={dashboardData}
+          />
+        );
       case "beds":
         return (
           <BedManagement
@@ -192,6 +199,12 @@ const AdminDashboard = () => {
                 <CardDescription>Common administrative tasks</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-4">
+                 <Button
+                  onClick={() => setActiveSection("appointments")}
+                  variant="outline"
+                >
+                  Manage Appointments
+                </Button>
                 <Button
                   onClick={() => setActiveSection("beds")}
                   variant="outline"

@@ -10,7 +10,7 @@ const getAuthToken = () => {
   }
 };
 
-// Common headers for authenticated requests
+
 const getAuthHeaders = () => {
   const token = getAuthToken();
   return {
@@ -106,10 +106,11 @@ export const adminApi = {
     }
   },
 
-  getAllAppointments: async () => {
+  getAllAppointments: async (filters = {}) => {
     try {
       const response = await axiosInstance.get(API_PATHS.ADMIN.GET_ALL_APPOINTMENTS, {
         headers: getAuthHeaders(),
+        params: filters,
       });
       return response.data;
     } catch (error) {
@@ -124,7 +125,7 @@ export const adminApi = {
     validateRequired({ appointmentId, status }, ['appointmentId', 'status']);
 
     try {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.patch(
         API_PATHS.ADMIN.UPDATE_APPOINTMENT_STATUS(appointmentId),
         { status },
         { headers: getAuthHeaders() }

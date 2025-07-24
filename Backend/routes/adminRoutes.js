@@ -22,7 +22,7 @@ router.get('/facility-status', jwtAuthMiddleware, onlyHospitalAdmins, adminContr
 
 router.put('/update-info', jwtAuthMiddleware, onlyHospitalAdmins, adminController.updateHospitalInfo);
 
-router.get('/all-appointments', jwtAuthMiddleware, onlyHospitalAdmins, appointmentController.getHospitalAppointments);
+router.get('/all-appointments', jwtAuthMiddleware, onlyHospitalAdmins, appointmentController.getAllAppointments);
 
 router.patch('/update-appointment/:id', jwtAuthMiddleware, onlyHospitalAdmins, appointmentController.updateAppointmentStatus);
 

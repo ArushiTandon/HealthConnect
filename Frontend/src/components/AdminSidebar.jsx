@@ -1,4 +1,4 @@
-import { Building, Bed, Settings, BarChart3, Hospital, LogOut, ArrowLeft} from "lucide-react";
+import { Building, Bed, CalendarClock, BarChart3, Hospital, LogOut, ArrowLeft} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -19,6 +19,11 @@ const menuItems = [
     title: "Overview",
     icon: BarChart3,
     id: "overview",
+  },
+  {
+    title: "Appointments",
+    icon: CalendarClock,
+    id: "appointments",
   },
   {
     title: "Bed Management",

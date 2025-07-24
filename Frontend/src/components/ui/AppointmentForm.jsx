@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, MapPin, Globe, Plus, Building2 } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Building2 } from 'lucide-react';
 import { hospitalApi } from '../../services/adminApi';
 
 const AppointmentForm = ({ isOpen, onClose, onSubmit }) => {

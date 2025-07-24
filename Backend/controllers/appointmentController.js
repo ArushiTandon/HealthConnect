@@ -101,17 +101,68 @@ exports.cancelAppointment = async (req, res) => {
 };
 
 // For hospital admin
-exports.getHospitalAppointments = async (req, res) => {
+exports.getAllAppointments = async (req, res) => {
   try {
     const hospitalId = req.user.hospitalId;
 
-    const appointments = await Appointment.find({ hospitalId })
-      .populate("userId", "username email")
-      .sort({ date: 1 });
+    const {
+      status,
+      date,
+      search,
+      sortBy = "date",
+      page = 1,
+      limit = 20,
+    } = req.query;
 
-    res.status(200).json(appointments);
+    const query = { hospitalId };
+
+    if (status && status !== "all") {
+      query.status = status;
+    }
+
+    if (date) {
+      query.date = date; 
+    }
+
+    if (search) {
+      query.$or = [
+        { patientName: { $regex: search, $options: "i" } },
+        { patientEmail: { $regex: search, $options: "i" } },
+        { reason: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const appointments = await Appointment.find(query)
+      .populate("userId", "username email")
+      .sort({ [sortBy]: sortBy === "date" ? 1 : -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const allAppointments = await Appointment.find({ hospitalId });
+    const stats = {
+      total: allAppointments.length,
+      pending: allAppointments.filter((a) => a.status === "Pending").length,
+      confirmed: allAppointments.filter((a) => a.status === "Confirmed").length,
+      cancelled: allAppointments.filter((a) => a.status === "Cancelled").length,
+      completed: allAppointments.filter((a) => a.status === "Completed").length,
+    };
+
+    const totalFiltered = await Appointment.countDocuments(query);
+
+    res.status(200).json({
+      appointments,
+      stats,
+      pagination: {
+        total: totalFiltered,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(totalFiltered / limit),
+      },
+    });
   } catch (error) {
-    console.error("Error fetching hospital appointments:", error);
+    console.error("Error fetching filtered appointments:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -154,36 +205,6 @@ exports.updateAppointmentStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating appointment status:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// Admin function to get all appointments for dashboard
-exports.getAllAppointments = async (req, res) => {
-  try {
-    const hospitalId = req.user.hospitalId;
-
-    const appointments = await Appointment.find({ hospitalId })
-      .populate("userId", "username email")
-      .sort({ createdAt: -1 });
-
-    const stats = {
-      total: appointments.length,
-      pending: appointments.filter((app) => app.status === "Pending").length,
-      confirmed: appointments.filter((app) => app.status === "Confirmed")
-        .length,
-      cancelled: appointments.filter((app) => app.status === "Cancelled")
-        .length,
-      completed: appointments.filter((app) => app.status === "Completed")
-        .length,
-    };
-
-    res.status(200).json({
-      appointments,
-      stats,
-    });
-  } catch (error) {
-    console.error("Error fetching all appointments:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
