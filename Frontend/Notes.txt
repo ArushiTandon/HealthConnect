@@ -4,9 +4,9 @@ TO DO:
 3. Integrate cron + SendGrid for reminders of appointments through email. ✅
 
 BUGS:
-1. user Cancel status clash with admin status.
-2. Admin search bar
-3. On filter full page gets updated , data mismatch..
+1. user Cancel status clash with admin status. ✅
+2. Admin search bar ✅
+3. On filter full page gets updated , data mismatch. ✅
 
 
 UPCOMING FEATURES:

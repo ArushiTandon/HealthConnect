@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Calendar, 
   Clock, 
@@ -7,12 +7,10 @@ import {
   Mail, 
   MapPin, 
   Search,
-  Filter,
   CheckCircle,
   XCircle,
   AlertCircle,
   Eye,
-  MoreHorizontal,
   RefreshCw
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -22,7 +20,8 @@ import { adminApi } from '../services/adminApi';
 import { useToast } from '../hooks/use-toast';
 
 const AppointmentManagement = ({ onUpdate, dashboardData }) => {
-  const [appointments, setAppointments] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]); 
+  const [appointments, setAppointments] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -30,8 +29,8 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
   const [filters, setFilters] = useState({
     status: 'all',
     date: '',
-    search: ''
   });
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
  useEffect(() => {
@@ -42,9 +41,18 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
   const fetchAppointments = async () => {
   try {
     setLoading(true);
-    const response = await adminApi.getAllAppointments(filters);
-    console.log('Fetched appointments:', response);
-    setAppointments(response?.appointments || []);
+    const response = await adminApi.getAllAppointments();
+    const all = response?.appointments || [];
+    setAllAppointments(all); // for stats
+
+    // Apply filters client-side
+    const filtered = all.filter((appointment) => {
+      if (filters.status !== "all" && appointment.status !== filters.status) return false;
+      if (filters.date && appointment.date !== filters.date) return false;
+      return true;
+    });
+
+    setAppointments(filtered); 
   } catch (error) {
     console.error('Error fetching appointments:', error);
     toast({
@@ -56,6 +64,7 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
     setLoading(false);
   }
 };
+
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -94,6 +103,34 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
     }
   };
 
+   // Filter and sort appointments
+  const filteredAndSortedAppointments = appointments
+    .filter((appointment) => {
+  // Status filter
+  if (filters.status !== "all" && appointment.status !== filters.status) {
+    return false;
+  }
+
+  // Date filter
+  if (filters.date && appointment.date !== filters.date) {
+    return false;
+  }
+
+  // Search term filter
+  if (searchTerm) {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      appointment.userId?.username?.toLowerCase().includes(searchLower) ||
+      appointment.userId?.email?.toLowerCase().includes(searchLower) ||
+      appointment.reason?.toLowerCase().includes(searchLower) ||
+      appointment.specialty?.toLowerCase().includes(searchLower)
+    );
+  }
+
+  return true;
+})
+
+
  const getStatusBadge = (status) => {
   const statusConfig = {
     Pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },
@@ -129,21 +166,18 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
 
 
  const getStatusCounts = () => {
-  if (!Array.isArray(appointments)) return { total: 0 };
+  if (!Array.isArray(allAppointments)) return { total: 0 };
 
-  return appointments.reduce((acc, apt) => {
-
+  return allAppointments.reduce((acc, apt) => {
     const status = apt.status || 'Pending';
-    
-
     acc[status] = (acc[status] || 0) + 1;
     acc.total = (acc.total || 0) + 1;
-    
     return acc;
   }, {});
 };
 
-  const statusCounts = getStatusCounts();
+const statusCounts = useMemo(() => getStatusCounts(), [allAppointments]);
+
 
   if (loading) {
     return (
@@ -249,8 +283,8 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
                   type="text"
                   placeholder="Search by patient name, email, or reason..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </div>
@@ -276,14 +310,14 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
 
           {/* Appointments List */}
           <div className="space-y-4">
-            {appointments.length === 0 ? (
+            {filteredAndSortedAppointments.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p className="text-lg font-medium">No appointments found</p>
                 <p className="text-sm">Try adjusting your filters or check back later.</p>
               </div>
             ) : (
-              appointments.map((appointment) => (
+              filteredAndSortedAppointments.map((appointment) => (
                 <Card key={appointment._id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
@@ -353,7 +387,7 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
                           </>
                         )}
                         
-                        {appointment.status === 'confirmed' && (
+                        {appointment.status?.toLowerCase() === 'confirmed' && (
                           <Button
                             variant="outline"
                             size="sm"
