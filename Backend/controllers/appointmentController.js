@@ -192,7 +192,7 @@ exports.updateAppointmentStatus = async (req, res) => {
     const emitToUser = req.app.get("emitToUser");
 
     if (emitToUser) {
-      emitToUser(appointment.userId, "appointmentStatusUpdated", {
+      emitToUser(String(appointment.userId), "appointmentStatusUpdated", {
         appointment: populatedAppointment,
         message: `Appointment ${status.toLowerCase()}`,
         status: status,

@@ -2,17 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button.jsx";
 import { Input } from "../../components/ui/input.jsx";
 import { Label } from "../../components/ui/label.jsx";
-import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group.jsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card.jsx";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Eye, EyeOff, Heart, Shield } from "lucide-react";
+import { Eye, EyeOff, Heart } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useToast } from "../../hooks/use-toast.js";
-// import axiosInstance from "../../utils/axiosInstance";
-// import { validateEmail } from "../../utils/helper/validateEmail";
-// import { API_PATHS } from "../../utils/apiPaths";
-// import { useContext } from 'react';
-// import { UserContext } from '../../context/userContext';
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,8 +16,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-const { login, isAuthenticated, user } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
 
   console.log("Logged in user:", user);
@@ -93,29 +87,6 @@ const handleSubmit = async (e) => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Role Selection
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Account Type</Label>
-                <RadioGroup
-                  value={role}
-                  onValueChange={setRole}
-                  className="flex space-x-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="user" id="user" />
-                    <Label htmlFor="user" className="text-sm text-gray-700 cursor-pointer">
-                      Patient/User
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="hospital" id="admin" />
-                    <Label htmlFor="admin" className="text-sm text-gray-700 cursor-pointer flex items-center">
-                      <Shield className="h-4 w-4 mr-1" />
-                      Hospital Admin
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div> */}
 
               {/* Email Field */}
               <div className="space-y-2">

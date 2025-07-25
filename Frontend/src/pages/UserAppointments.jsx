@@ -14,6 +14,7 @@ import { appointmentApi } from "../services/adminApi";
 import AppointmentForm from "../components/ui/AppointmentForm";
 import { Button } from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
+import socket from "../services/socket";
 
 const UserAppointments = () => {
   const navigate = useNavigate();
@@ -24,8 +25,37 @@ const UserAppointments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
+    // Get user ID from localStorage or auth context
+    const getUserId = () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          return payload.id || payload.userId;
+        } catch (error) {
+          console.error('Error parsing token:', error);
+          return null;
+        }
+      }
+      return null;
+    };
+
+    const currentUserId = getUserId();
+    setUserId(currentUserId);
+
+    // Connect socket and register user
+    if (currentUserId && !socket.connected) {
+      socket.connect();
+      
+      socket.on('connect', () => {
+        console.log('Socket connected, registering user:', currentUserId);
+        socket.emit('register-user', currentUserId);
+      });
+    }
+
     const loadAppointments = async () => {
       try {
         await fetchAppointments();
@@ -34,7 +64,56 @@ const UserAppointments = () => {
         setError("Failed to load appointments. Please refresh the page.");
       }
     };
+    
     loadAppointments();
+
+    // Socket event listener for appointment updates
+    const handleAppointmentUpdate = (data) => {
+      console.log('Received appointment update:', data);
+      
+      setAppointments((prevAppointments) => {
+        const updatedAppointments = prevAppointments.map((apt) => {
+          if (apt._id === data.appointment._id) {
+            return {
+              ...apt,
+              status: data.status,
+              ...data.appointment, // Update with full appointment data
+            };
+          }
+          return apt;
+        });
+        
+        // Show notification to user
+        if (data.message) {
+          // You can use a toast library here or show a browser notification
+          console.log('Appointment Update:', data.message);
+          
+          // Optional: Show browser notification (requires permission)
+          if (Notification.permission === 'granted') {
+            new Notification('Appointment Update', {
+              body: `${data.message} at ${data.hospitalName || 'Hospital'}`,
+              icon: '/favicon.ico',
+            });
+          }
+        }
+        
+        return updatedAppointments;
+      });
+    };
+
+    socket.on("appointmentStatusUpdated", handleAppointmentUpdate);
+
+    return () => {
+      socket.off("appointmentStatusUpdated", handleAppointmentUpdate);
+      // Don't disconnect socket here as it might be used by other components
+    };
+  }, []);
+
+  // Request notification permission on component mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, []);
 
   const fetchAppointments = async () => {
@@ -83,6 +162,7 @@ const UserAppointments = () => {
       setError(null);
       await appointmentApi.cancelAppointment(appointmentId, "Cancelled");
 
+      // Optimistically update UI - socket will also update but this gives immediate feedback
       setAppointments((prevAppointments) =>
         prevAppointments.map((apt) =>
           apt._id === appointmentId ? { ...apt, status: "Cancelled" } : apt
@@ -91,6 +171,9 @@ const UserAppointments = () => {
     } catch (error) {
       console.error("Error cancelling appointment:", error);
       setError("Failed to cancel appointment. Please try again.");
+      
+      // Revert optimistic update on error
+      await fetchAppointments();
     }
   };
 
@@ -338,10 +421,6 @@ const UserAppointments = () => {
                   </div>
 
                   <div className="flex flex-col space-y-2">
-                    {/* <button className="text-sm text-blue-600 hover:text-blue-800 hover:underline">
-                      View Details
-                    </button> */}
-
                     {["Pending", "Confirmed"].includes(appointment.status) && (
                       <button
                         onClick={() => handleCancelAppointment(appointment._id)}

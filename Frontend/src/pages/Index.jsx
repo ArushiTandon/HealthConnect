@@ -58,8 +58,8 @@ const Index = () => {
               <span className="text-2xl font-bold text-gray-900">
                 HealthConnect
               </span>
-            </div>
-            <nav className="hidden md:flex space-x-8">
+            </div> 
+            <nav className="hidden md:flex items-center space-x-8">
               <a
                 href="#"
                 className="text-gray-600 hover:text-blue-600 transition-colors"

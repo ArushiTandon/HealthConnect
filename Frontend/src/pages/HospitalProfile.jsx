@@ -47,6 +47,14 @@ const HospitalProfile = () => {
 
       alert("Appointment Scheduled!");
       setShowAppointmentForm(false);
+      
+      // Reset form
+      setAppointmentData({
+        patientName: "",
+        date: "",
+        time: "",
+        reason: "",
+      });
     } catch (err) {
       console.error("Failed to schedule:", err);
       alert("Failed to schedule appointment.");
@@ -79,9 +87,25 @@ const HospitalProfile = () => {
   }, [id]);
 
   useEffect(() => {
-    socket.emit("join-hospital-room", id);
+    
+    if (!socket.connected) {
+      socket.connect();
+    }
 
-    socket.on("bedAvailabilityUpdated", (data) => {
+    const joinRoom = () => {
+      console.log(`Joining hospital room: ${id}`);
+      socket.emit("join-hospital-room", id);
+    };
+
+    if (socket.connected) {
+      joinRoom();
+    } else {
+      socket.on('connect', joinRoom);
+    }
+
+    // Socket event handlers
+    const handleBedUpdate = (data) => {
+      console.log('Received bed availability update:', data);
       if (data.hospitalId === id) {
         setHospital((prev) => ({
           ...prev,
@@ -89,30 +113,29 @@ const HospitalProfile = () => {
           lastUpdated: data.lastUpdated,
         }));
       }
-    });
+    };
 
-    socket.on("facilityStatusUpdated", (data) => {
-  
-  if (data.hospitalId === id) {
-   
-    setHospital((prev) => {
-      const newState = {
-        ...prev,
-        facilityStatus: {
-          ...prev.facilityStatus,
-          ...data.facilityStatus,
-        },
-        lastUpdated: data.lastUpdated,
-      };
-      
-      return newState;
-    });
-  } else {
-    console.log("Hospital ID mismatch:", data.hospitalId, "vs", id);
-  }
-});
+    const handleFacilityUpdate = (data) => {
+      console.log('Received facility status update:', data);
+      if (data.hospitalId === id) {
+        setHospital((prev) => {
+          const newState = {
+            ...prev,
+            facilityStatus: {
+              ...prev.facilityStatus,
+              ...data.facilityStatus,
+            },
+            lastUpdated: data.lastUpdated,
+          };
+          return newState;
+        });
+      } else {
+        console.log("Hospital ID mismatch:", data.hospitalId, "vs", id);
+      }
+    };
 
-    socket.on("hospitalInfoUpdated", (data) => {
+    const handleHospitalInfoUpdate = (data) => {
+      console.log('Received hospital info update:', data);
       if (data.hospitalId === id) {
         setHospital((prev) => ({
           ...prev,
@@ -120,11 +143,22 @@ const HospitalProfile = () => {
           lastUpdated: data.lastUpdated,
         }));
       }
-    });
+    };
+
+    // Add event listeners
+    socket.on("bedAvailabilityUpdated", handleBedUpdate);
+    socket.on("facilityStatusUpdated", handleFacilityUpdate);
+    socket.on("hospitalInfoUpdated", handleHospitalInfoUpdate);
 
     return () => {
+      console.log(`Leaving hospital room: ${id}`);
       socket.emit("leave-hospital-room", id);
-      socket.disconnect();
+      
+      socket.off("bedAvailabilityUpdated", handleBedUpdate);
+      socket.off("facilityStatusUpdated", handleFacilityUpdate);
+      socket.off("hospitalInfoUpdated", handleHospitalInfoUpdate);
+      socket.off('connect', joinRoom);
+      
     };
   }, [id]);
 
@@ -272,6 +306,13 @@ const HospitalProfile = () => {
                 <CardTitle className="flex items-center">
                   <Bed className="h-5 w-5 mr-2" />
                   Bed Availability
+                  {/* Real-time indicator */}
+                  <div className="ml-auto">
+                    <div className="flex items-center text-xs text-gray-500">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
+                      Live
+                    </div>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -317,9 +358,16 @@ const HospitalProfile = () => {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>Available Facilities</span>
-                  <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                    {availableFacilities.length} Available
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                      {availableFacilities.length} Available
+                    </span>
+                    {/* Real-time indicator */}
+                    <div className="flex items-center text-xs text-gray-500">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
+                      Live
+                    </div>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -328,7 +376,7 @@ const HospitalProfile = () => {
                     {availableFacilities.map((facility, index) => (
                       <div
                         key={`available-${facility.name}-${index}`}
-                        className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg transition-all duration-300"
                       >
                         <span className="font-medium text-gray-900">
                           {facility.name}
@@ -369,7 +417,7 @@ const HospitalProfile = () => {
                     {unavailableFacilities.map((facility, index) => (
                       <div
                         key={`unavailable-${facility.name}-${index}`}
-                        className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg transition-all duration-300"
                       >
                         <span className="font-medium text-gray-900">
                           {facility.name}
@@ -554,6 +602,8 @@ const HospitalProfile = () => {
           </div>
         </div>
       </div>
+      
+      {/* Appointment Form Modal */}
       {showAppointmentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">

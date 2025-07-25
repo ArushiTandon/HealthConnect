@@ -19,9 +19,26 @@ const io = new Server(server, {
     }
 });
 
+const userSocketMap = {};
+
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
+  socket.on("register-user", (userId) => {
+    userSocketMap[userId] = socket.id;
+    console.log(`Registered user ${userId} with socket ${socket.id}`);
+  });
+
+  socket.on("disconnect", () => {
+  console.log(`User disconnected: ${socket.id}`);
+
+  for (const [userId, sockId] of Object.entries(userSocketMap)) {
+    if (sockId === socket.id) {
+      delete userSocketMap[userId];
+      console.log(`Removed user ${userId} on disconnect`);
+    }
+  }
+});
   socket.on("join-hospital-room", (hospitalId) => {
     socket.join(hospitalId);
     console.log(`Socket ${socket.id} joined room: ${hospitalId}`);
@@ -32,9 +49,13 @@ io.on("connection", (socket) => {
     console.log(`Socket ${socket.id} left room: ${hospitalId}`);
   });
 
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
+});
+
+app.set('emitToUser', (userId, event, data) => {
+  const socketId = userSocketMap[userId];
+  if (socketId) {
+    io.to(socketId).emit(event, data);
+  }
 });
 
 connectDB();
