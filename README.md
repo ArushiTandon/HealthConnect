@@ -4,7 +4,7 @@ HealthConnect is a full-stack web application designed to streamline hospital ma
 
 ## Features
 
-- **Hospital Management:** Admins can manage hospital details, facilities, and bed availability.
+- **Hospital Management:** Admins can manage hospital details, facilities, appointments and bed availability.
 - **Appointment Booking:** Users can search for hospitals and book appointments online.
 - **Real-Time Updates:** Uses Socket.IO for real-time updates on hospital data and appointments.
 - **Appointment Reminders:** Automated email reminders are sent to users a day before their appointment using cron jobs and SendGrid.
@@ -91,7 +91,7 @@ HealthConnect/
 - **Live Demo:** [https://healthconnect-frontend.onrender.com](https://healthconnect-frontend.onrender.com)
 
 ## Technologies Used
-- **Backend:** Node.js, Express, MongoDB, Mongoose, Socket.IO, Passport.js
+- **Backend:** Node.js, Express, MongoDB, Mongoose, Socket.IO, Passport.js, node-cron, SendGrid
 - **Frontend:** React, Vite, Tailwind CSS, Axios
 
 ## License

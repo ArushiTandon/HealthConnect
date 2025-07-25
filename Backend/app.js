@@ -13,8 +13,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     
     cors: {
-        // origin:'https://healthconnect-frontend.onrender.com', 
-        origin: "*",
+        origin:'https://healthconnect-frontend.onrender.com', 
+        // origin: "*",
         credentials: true,
     }
 });
