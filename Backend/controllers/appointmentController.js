@@ -22,19 +22,23 @@ exports.createAppointment = async (req, res) => {
 
     await newAppointment.save();
 
+    const populatedAppointment = await Appointment.findById(newAppointment._id)
+      .populate('hospitalId')
+      .exec();
+
     const io = req.app.get("io");
     const emitToHospital = req.app.get("emitToHospital");
 
     if (emitToHospital) {
       emitToHospital(hospitalId, "newAppointment", {
-        appointment: newAppointment,
+        appointment: populatedAppointment,
         message: "New appointment request received",
       });
     }
 
     res.status(201).json({
       message: "Appointment created successfully",
-      appointment: newAppointment,
+      appointment: populatedAppointment,
     });
   } catch (error) {
     console.error("Error creating appointment:", error);

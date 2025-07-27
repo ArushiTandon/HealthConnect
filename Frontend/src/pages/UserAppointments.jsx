@@ -83,9 +83,8 @@ const UserAppointments = () => {
           return apt;
         });
         
-        // Show notification to user
         if (data.message) {
-          // You can use a toast library here or show a browser notification
+          alert(`Appointment Update: ${data.message}`);
           console.log('Appointment Update:', data.message);
 
         }
@@ -100,12 +99,6 @@ const UserAppointments = () => {
       socket.off("appointmentStatusUpdated", handleAppointmentUpdate);
      
     };
-  }, []);
-
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
   }, []);
 
   const fetchAppointments = async () => {
@@ -135,7 +128,12 @@ const UserAppointments = () => {
       reason
     );
 
-    await fetchAppointments();
+     const newAppointment = response.appointment || response;
+
+     setAppointments((prevAppointments) => [
+      newAppointment,
+      ...prevAppointments,
+    ]);
     
     setIsFormOpen(false);
     console.log("Appointment booked successfully!");
