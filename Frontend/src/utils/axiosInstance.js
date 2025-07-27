@@ -32,14 +32,14 @@ axiosInstance.interceptors.response.use(
                 window.location.href = "/login";
             } else if (error.response.status === 500) {
                 console.error("Server Error:", error);
-                toast.error("Internal server error. Please try again later.");
+                
             }
         } else if (error.code === "ECONNABORTED") {
             console.error("Request Timeout:", error);
-            toast.error("Server is starting up. Please wait a few seconds and retry.");
+            
         } else {
             console.error("Unhandled Axios Error:", error.message || error);
-            toast.error("Failed to fetch data. Try again.");
+           
         }
 
         return Promise.reject(error);

@@ -13,7 +13,6 @@ export function BedManagement({ onUpdate, dashboardData, bedData, setBedData }) 
     available: 0,
     icu: { total: 0, available: 0 },
     emergency: { total: 0, available: 0 },
-    // general: { total: 0, available: 0 },
   });
 
   const { toast } = useToast();
@@ -242,9 +241,9 @@ export function BedManagement({ onUpdate, dashboardData, bedData, setBedData }) 
         <p className="text-gray-600">Update bed availability across different departments</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <BedCounter
-          title="Total Hospital"
+          title="Total Beds"
           total={bedStats.total}
           available={bedStats.available}
           category="available"
@@ -267,13 +266,6 @@ export function BedManagement({ onUpdate, dashboardData, bedData, setBedData }) 
           icon={Bed}
         />
         
-        {/* <BedCounter
-          title="General Ward"
-          total={bedStats.general.total}
-          available={bedStats.general.available}
-          category="general"
-          icon={Bed}
-        /> */}
       </div>
 
       <Card>
