@@ -28,7 +28,7 @@ const UserAppointments = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    // Get user ID from localStorage or auth context
+    
     const getUserId = () => {
       const token = localStorage.getItem('authToken');
       if (token) {
@@ -77,7 +77,7 @@ const UserAppointments = () => {
             return {
               ...apt,
               status: data.status,
-              ...data.appointment, // Update with full appointment data
+              ...data.appointment, 
             };
           }
           return apt;
@@ -87,14 +87,7 @@ const UserAppointments = () => {
         if (data.message) {
           // You can use a toast library here or show a browser notification
           console.log('Appointment Update:', data.message);
-          
-          // Optional: Show browser notification (requires permission)
-          if (Notification.permission === 'granted') {
-            new Notification('Appointment Update', {
-              body: `${data.message} at ${data.hospitalName || 'Hospital'}`,
-              icon: '/favicon.ico',
-            });
-          }
+
         }
         
         return updatedAppointments;
@@ -105,11 +98,10 @@ const UserAppointments = () => {
 
     return () => {
       socket.off("appointmentStatusUpdated", handleAppointmentUpdate);
-      // Don't disconnect socket here as it might be used by other components
+     
     };
   }, []);
 
-  // Request notification permission on component mount
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -132,37 +124,32 @@ const UserAppointments = () => {
   };
 
   const handleBookAppointment = async (formData) => {
-    try {
-      setError(null);
+  try {
+    setError(null);
 
-      const { hospitalId, date, time, reason } = formData;
-      const response = await appointmentApi.createAppointment(
-        hospitalId,
-        date,
-        time,
-        reason
-      );
+    const { hospitalId, date, time, reason } = formData;
+    const response = await appointmentApi.createAppointment(
+      hospitalId,
+      date,
+      time,
+      reason
+    );
 
-      const newAppointment = response.appointment || response;
-      setAppointments((prevAppointments) => [
-        newAppointment,
-        ...prevAppointments,
-      ]);
-      setIsFormOpen(false);
-
-      console.log("Appointment booked successfully!");
-    } catch (error) {
-      console.error("Error booking appointment:", error);
-      setError("Failed to book appointment. Please try again.");
-    }
-  };
+    await fetchAppointments();
+    
+    setIsFormOpen(false);
+    console.log("Appointment booked successfully!");
+  } catch (error) {
+    console.error("Error booking appointment:", error);
+    setError("Failed to book appointment. Please try again.");
+  }
+};
 
   const handleCancelAppointment = async (appointmentId) => {
     try {
       setError(null);
       await appointmentApi.cancelAppointment(appointmentId, "Cancelled");
 
-      // Optimistically update UI - socket will also update but this gives immediate feedback
       setAppointments((prevAppointments) =>
         prevAppointments.map((apt) =>
           apt._id === appointmentId ? { ...apt, status: "Cancelled" } : apt
@@ -172,7 +159,7 @@ const UserAppointments = () => {
       console.error("Error cancelling appointment:", error);
       setError("Failed to cancel appointment. Please try again.");
       
-      // Revert optimistic update on error
+      
       await fetchAppointments();
     }
   };

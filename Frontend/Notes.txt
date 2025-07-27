@@ -1,13 +1,6 @@
 TO DO:
-1. Make UI for viewing appointments. ✅
-2. Make UI for viewing and updating status of appointments for hospital admins.✅
-3. Integrate cron + SendGrid for reminders of appointments through email. ✅
 
 BUGS:
-1. user Cancel status clash with admin status. ✅
-2. Admin search bar ✅
-3. On filter full page gets updated , data mismatch. ✅
-
 
 UPCOMING FEATURES:
 1. Ambulance calling and live tracking.
