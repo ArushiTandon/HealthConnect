@@ -1,16 +1,16 @@
 import { Search, Filter, Hospital, MapPin, Star } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Checkbox } from "./ui/checkbox";
-import { Switch } from "./ui/switch";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Checkbox } from "../ui/checkbox";
+import { Switch } from "../ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { useState, useEffect } from "react";
-import { hospitalApi } from '../services/adminApi';
+import { hospitalApi } from '../../services/adminApi';
 
 const FilterBar = ({
   searchQuery,

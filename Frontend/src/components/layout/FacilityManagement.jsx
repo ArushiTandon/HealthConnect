@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
-import { Badge } from "./ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
+import { Badge } from "../ui/badge";
 import { CheckCircle, XCircle, Activity, Heart, Stethoscope, Users, Car, Zap, Building, Ambulance, Hospital, Shield } from "lucide-react";
-import { adminApi } from "../services/adminApi";
-import { useToast } from "../hooks/use-toast.js";
+import { adminApi } from "../../services/adminApi.js";
+import { useToast } from "../../hooks/use-toast.js";
 
 export function FacilityManagement({ onUpdate, dashboardData, facilityData, setFacilityData }) {
-  // Create a mapping between display names and database keys
+ 
   const facilityMapping = {
     'ICU': { dbKey: 'ICU', icon: Heart },
     'Emergency Department': { dbKey: 'Emergency Department', icon: Ambulance },
@@ -18,7 +18,7 @@ export function FacilityManagement({ onUpdate, dashboardData, facilityData, setF
     'Neurology': { dbKey: 'Neurology', icon: Stethoscope },
     'Pharmacy': { dbKey: 'pharmacy', icon: Building },
     'Maternity': { dbKey: 'maternity', icon: Users },
-    // Add more mappings as needed
+    
   };
 
   const [facilities, setFacilities] = useState([]);

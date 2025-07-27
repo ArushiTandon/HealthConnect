@@ -4,16 +4,16 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Navigate, BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import AdminRoute from "./components/AdminRoute.jsx";
-import Index from "./pages/Index.jsx";
-import Results from "./pages/Results.jsx";
-import HospitalProfile from "./pages/HospitalProfile.jsx";
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
+import AdminRoute from './routes/AdminRoute.jsx';
+import Index from "./pages/user/Index.jsx";
+import Results from "./pages/user/Results.jsx";
+import HospitalProfile from "./pages/user/HospitalProfile.jsx";
 import Signup from "./pages/auth/Signup.jsx";
-import NotFound from "./pages/NotFound.jsx";
+import NotFound from "./pages/user/NotFound.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import Login from "./pages/auth/Login.jsx";
-import UserAppointments from "./pages/UserAppointments.jsx";
+import UserAppointments from "./pages/user/UserAppointments.jsx";
 
 const queryClient = new QueryClient();
 

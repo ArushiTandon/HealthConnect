@@ -1,4 +1,3 @@
-// src/components/theme-provider.jsx
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { useEffect, useState } from "react"
 

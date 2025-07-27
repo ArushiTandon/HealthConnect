@@ -13,11 +13,11 @@ import {
   Eye,
   RefreshCw
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { adminApi } from '../services/adminApi';
-import { useToast } from '../hooks/use-toast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { adminApi } from '../../services/adminApi';
+import { useToast } from '../../hooks/use-toast';
 
 const AppointmentManagement = ({ onUpdate, dashboardData }) => {
   const [allAppointments, setAllAppointments] = useState([]); 

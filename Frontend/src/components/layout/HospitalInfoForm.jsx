@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Textarea } from "./ui/textarea";
-import { useToast } from "../hooks/use-toast.js";
-import { adminApi } from "../services/adminApi";
+import { Button } from "../ui/button.jsx";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Textarea } from "../ui/textarea";
+import { useToast } from "../../hooks/use-toast.js";
+import { adminApi } from "../../services/adminApi.js";
 
 export function HospitalInfoForm({ onUpdate, dashboardData, hospitalData, setHospitalData }) {
   const { toast } = useToast();

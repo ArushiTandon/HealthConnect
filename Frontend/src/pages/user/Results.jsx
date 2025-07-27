@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import ResultsHeader from "../components/ResultsHeader.jsx";
-import FilterBar from "../components/FilterBar.jsx";
-import HospitalCard from "../components/HospitalCard.jsx";
-import { hospitalApi } from "../services/adminApi.js";
+import ResultsHeader from "../../components/layout/ResultsHeader.jsx";
+import FilterBar from "../../components/common/FilterBar.jsx";
+import HospitalCard from "../../components/common/HospitalCard.jsx";
+import { hospitalApi } from "../../services/adminApi.js";
 
 const Results = () => {
   const [hospitals, setHospitals] = useState([]);

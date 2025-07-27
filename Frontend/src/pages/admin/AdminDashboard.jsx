@@ -12,11 +12,11 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from "../../components/ui/sidebar.jsx";
-import AppointmentManagement from "../../components/AppointmentManagement.jsx";
-import { AdminSidebar } from "../../components/AdminSidebar.jsx";
-import { BedManagement } from "../../components/BedManagement.jsx";
-import { FacilityManagement } from "../../components/FacilityManagement.jsx";
-import { HospitalInfoForm } from "../../components/HospitalInfoForm.jsx";
+import AppointmentManagement from "../../components/layout/AppointmentManagement.jsx";
+import { AdminSidebar } from "../../components/layout/AdminSidebar.jsx";
+import { BedManagement } from "../../components/layout/BedManagement.jsx";
+import { FacilityManagement } from "../../components/layout/FacilityManagement.jsx";
+import { HospitalInfoForm } from "../../components/layout/HospitalInfoForm.jsx";
 import { Calendar, Clock } from "lucide-react";
 import { adminApi } from "../../services/adminApi.js";
 import { useToast } from "../../hooks/use-toast.js";

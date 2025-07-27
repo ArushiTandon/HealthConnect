@@ -1,6 +1,6 @@
 import { Hospital, Heart, Ambulance, Shield, Clock, Star, MapPin, Calendar } from "lucide-react";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useNavigate } from "react-router-dom";
 
 const HospitalCard = ({ hospital }) => {

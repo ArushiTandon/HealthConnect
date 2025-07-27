@@ -10,11 +10,11 @@ import {
   Search,
   ArrowLeft,
 } from "lucide-react";
-import { appointmentApi } from "../services/adminApi";
-import AppointmentForm from "../components/ui/AppointmentForm";
-import { Button } from "../components/ui/button";
+import { appointmentApi } from "../../services/adminApi";
+import AppointmentForm from "../../components/ui/AppointmentForm";
+import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
-import socket from "../services/socket";
+import socket from "../../services/socket";
 
 const UserAppointments = () => {
   const navigate = useNavigate();
