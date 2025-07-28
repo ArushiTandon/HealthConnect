@@ -19,8 +19,6 @@ const Login = () => {
   const { login, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
 
-  console.log("Logged in user:", user);
-
 useEffect(() => {
   if (isAuthenticated && user) {
     console.log("Redirecting based on role:", user.role);
@@ -66,11 +64,29 @@ const handleSubmit = async (e) => {
   }
 };
 
+const handleDemoLogin = async () => {
+  try {
+    const res = await login('citycare@test.com', '12345678', 'hospital'); 
+
+  } catch (error) {
+    console.error("Demo login failed", error);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
+        {/* Demo Admin Button */}
+        <div className="absolute top-6 right-6 z-10">
+          <button
+            onClick={handleDemoLogin}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow"
+            >
+            Login as Demo Admin
+          </button>
+        </div>
+
+            {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <div className="bg-blue-100 p-3 rounded-full">

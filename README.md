@@ -89,9 +89,6 @@ HealthConnect/
 - The backend runs on the port specified in your `.env` (default: 5000).
 - Use the application to search for hospitals, book appointments, and manage hospital data as an admin.
 - **Live Demo:** [https://healthconnect-frontend.onrender.com](https://healthconnect-frontend.onrender.com)
-- **Demo Admin Credentials:**
-  - Email: `citycare@test.com`
-  - Password: `12345678`
 
 ## Technologies Used
 - **Backend:** Node.js, Express, MongoDB, Mongoose, Socket.IO, Passport.js, node-cron, SendGrid
