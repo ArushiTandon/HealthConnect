@@ -51,9 +51,14 @@ const Signup = () => {
       navigate('/login');
     } catch (error) {
       console.error('Signup error:', error);
+
+      const errorMessage =
+    error?.response?.data?.error ||
+    (error instanceof Error ? error.message : "Signup failed");
+
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Signup failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
