@@ -21,7 +21,6 @@ import { useToast } from '../../hooks/use-toast';
 
 const AppointmentManagement = ({ onUpdate, dashboardData }) => {
   const [allAppointments, setAllAppointments] = useState([]); 
-  const [appointments, setAppointments] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -33,38 +32,28 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
- useEffect(() => {
-  fetchAppointments();
-}, [filters]);
-
+  // Only fetch data on component mount
+  useEffect(() => {
+    fetchAppointments();
+  }, []); // Remove filters dependency
 
   const fetchAppointments = async () => {
-  try {
-    setLoading(true);
-    const response = await adminApi.getAllAppointments();
-    const all = response?.appointments || [];
-    setAllAppointments(all); // for stats
-
-    // Apply filters client-side
-    const filtered = all.filter((appointment) => {
-      if (filters.status !== "all" && appointment.status !== filters.status) return false;
-      if (filters.date && appointment.date !== filters.date) return false;
-      return true;
-    });
-
-    setAppointments(filtered); 
-  } catch (error) {
-    console.error('Error fetching appointments:', error);
-    toast({
-      title: "Error",
-      description: error.message || "Failed to fetch appointments",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
+    try {
+      setLoading(true);
+      const response = await adminApi.getAllAppointments();
+      const all = response?.appointments || [];
+      setAllAppointments(all); // This stays static unless manually refreshed
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to fetch appointments",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -78,13 +67,13 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
       await adminApi.updateAppointmentStatus(appointmentId, newStatus);
       
       // Update local state
-      setAppointments(prev => 
-      prev.map(apt => 
-        apt._id === appointmentId 
-          ? { ...apt, status: newStatus }
-          : apt
-      )
-    );
+      setAllAppointments(prev => 
+        prev.map(apt => 
+          apt._id === appointmentId 
+            ? { ...apt, status: newStatus }
+            : apt
+        )
+      );
 
       toast({
         title: "Success",
@@ -103,48 +92,48 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
     }
   };
 
-   // Filter and sort appointments
-  const filteredAndSortedAppointments = appointments
-    .filter((appointment) => {
-  // Status filter
-  if (filters.status !== "all" && appointment.status !== filters.status) {
-    return false;
-  }
+  // Filter and sort appointments using useMemo for performance
+  const filteredAndSortedAppointments = useMemo(() => {
+    return allAppointments.filter((appointment) => {
+      // Status filter
+      if (filters.status !== "all" && appointment.status !== filters.status) {
+        return false;
+      }
 
-  // Date filter
-  if (filters.date && appointment.date !== filters.date) {
-    return false;
-  }
+      // Date filter
+      if (filters.date && appointment.date !== filters.date) {
+        return false;
+      }
 
-  // Search term filter
-  if (searchTerm) {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      appointment.userId?.username?.toLowerCase().includes(searchLower) ||
-      appointment.userId?.email?.toLowerCase().includes(searchLower) ||
-      appointment.reason?.toLowerCase().includes(searchLower) ||
-      appointment.specialty?.toLowerCase().includes(searchLower)
-    );
-  }
+      // Search term filter
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          appointment.userId?.username?.toLowerCase().includes(searchLower) ||
+          appointment.userId?.email?.toLowerCase().includes(searchLower) ||
+          appointment.reason?.toLowerCase().includes(searchLower) ||
+          appointment.specialty?.toLowerCase().includes(searchLower)
+        );
+      }
 
-  return true;
-})
+      return true;
+    });
+  }, [allAppointments, filters, searchTerm]);
 
-
- const getStatusBadge = (status) => {
-  const statusConfig = {
-    Pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },
-    Confirmed: { color: 'bg-green-100 text-green-800', label: 'Confirmed' },
-    Completed: { color: 'bg-blue-100 text-blue-800', label: 'Completed' },
-    Cancelled: { color: 'bg-red-100 text-red-800', label: 'Cancelled' },
-    Rejected: { color: 'bg-gray-100 text-purple-800', label: 'Rejected' }
-  };
-    
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      Pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },
+      Confirmed: { color: 'bg-green-100 text-green-800', label: 'Confirmed' },
+      Completed: { color: 'bg-blue-100 text-blue-800', label: 'Completed' },
+      Cancelled: { color: 'bg-red-100 text-red-800', label: 'Cancelled' },
+      Rejected: { color: 'bg-gray-100 text-purple-800', label: 'Rejected' }
+    };
+      
     const config = statusConfig[status] || statusConfig.Pending;
-  return (
-    <Badge className={`${config.color} border-0`}>
-      {config.label}
-    </Badge>
+    return (
+      <Badge className={`${config.color} border-0`}>
+        {config.label}
+      </Badge>
     );
   };
 
@@ -164,20 +153,18 @@ const AppointmentManagement = ({ onUpdate, dashboardData }) => {
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
+  const getStatusCounts = () => {
+    if (!Array.isArray(allAppointments)) return { total: 0 };
 
- const getStatusCounts = () => {
-  if (!Array.isArray(allAppointments)) return { total: 0 };
+    return allAppointments.reduce((acc, apt) => {
+      const status = apt.status || 'Pending';
+      acc[status] = (acc[status] || 0) + 1;
+      acc.total = (acc.total || 0) + 1;
+      return acc;
+    }, {});
+  };
 
-  return allAppointments.reduce((acc, apt) => {
-    const status = apt.status || 'Pending';
-    acc[status] = (acc[status] || 0) + 1;
-    acc.total = (acc.total || 0) + 1;
-    return acc;
-  }, {});
-};
-
-const statusCounts = useMemo(() => getStatusCounts(), [allAppointments]);
-
+  const statusCounts = useMemo(() => getStatusCounts(), [allAppointments]);
 
   if (loading) {
     return (

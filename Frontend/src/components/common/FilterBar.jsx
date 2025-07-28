@@ -157,28 +157,6 @@ const FilterBar = ({
         </div>
       </div>
 
-      {/* Facility Checkboxes */}
-      {/* <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Required Facilities</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {filterOptions.facilityCheckboxOptions.map((facility) => (
-            <div key={facility} className="flex items-center space-x-2">
-              <Checkbox
-                id={facility}
-                checked={selectedFacilities.includes(facility)}
-                onCheckedChange={(checked) => handleFacilityCheckbox(facility, checked)}
-              />
-              <label
-                htmlFor={facility}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {facility}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div> */}
-
       {/* Toggle Switch */}
       <div className="flex items-center space-x-3">
         <Switch
