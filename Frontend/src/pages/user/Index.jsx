@@ -303,7 +303,7 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 onClick={handleSearch}
-                className="h-12 px-8 bg-white text-blue-600 hover:bg-gray-100 text-lg font-semibold"
+                className="h-12 px-8 bg-white text-blue-600 hover:bg-gray-300 text-lg font-semibold"
               >
                 {isAuthenticated ? "Find Hospitals Now" : "Login to Search"}
                 <ChevronRight className="h-5 w-5 ml-2" />
@@ -312,7 +312,7 @@ const Index = () => {
                 <Button
                   onClick={() => navigate("/signup")}
                   variant="outline"
-                  className="h-12 px-8 border-white text-white hover:bg-white hover:text-blue-600 text-lg font-semibold"
+                  className="h-12 px-8 border-white text-blue-600 hover:bg-gray-300 text-lg font-semibold"
                 >
                   Create Account
                 </Button>
