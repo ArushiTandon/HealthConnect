@@ -24,26 +24,28 @@ axiosInstance.interceptors.request.use(
 )
 
 axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response) {
-            if (error.response.status === 401) {
-                console.warn("Unauthorized - possibly invalid token");
-                window.location.href = "/login";
-            } else if (error.response.status === 500) {
-                console.error("Server Error:", error);
-                
-            }
-        } else if (error.code === "ECONNABORTED") {
-            console.error("Request Timeout:", error);
-            
-        } else {
-            console.error("Unhandled Axios Error:", error.message || error);
-           
-        }
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const isOnLoginPage = window.location.pathname === "/login";
 
-        return Promise.reject(error);
+    if (status === 401) {
+      console.warn("401 Unauthorized");
+
+      if (!isOnLoginPage) {
+        window.location.href = "/login";
+      }
+    } else if (status === 500) {
+      console.error("500 Server Error:", error);
+    } else if (error.code === "ECONNABORTED") {
+      console.error("Request Timeout:", error);
+    } else {
+      console.error("Unhandled Axios Error:", error.message || error);
     }
+
+    return Promise.reject(error);
+  }
 );
+
 
 export default axiosInstance;
