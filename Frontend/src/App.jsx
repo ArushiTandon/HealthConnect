@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Navigate, BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
-import AdminRoute from './routes/AdminRoute.jsx';
+import AdminRoute from "./routes/AdminRoute.jsx";
 import Index from "./pages/user/Index.jsx";
 import Results from "./pages/user/Results.jsx";
 import HospitalProfile from "./pages/user/HospitalProfile.jsx";
@@ -14,6 +14,7 @@ import NotFound from "./pages/user/NotFound.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import Login from "./pages/auth/Login.jsx";
 import UserAppointments from "./pages/user/UserAppointments.jsx";
+import ChatBot from "./components/common/ChatBot.jsx";
 
 const queryClient = new QueryClient();
 
@@ -60,9 +61,12 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+            {/* Global ChatBot - Available on all pages for eligible users */}
+            {isAuthenticated && user?.role !== "hospital" && <ChatBot />}
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

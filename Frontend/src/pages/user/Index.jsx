@@ -58,7 +58,7 @@ const Index = () => {
               <span className="text-2xl font-bold text-gray-900">
                 HealthConnect
               </span>
-            </div> 
+            </div>
             <nav className="hidden md:flex items-center space-x-8">
               <a
                 href="#"
@@ -312,7 +312,7 @@ const Index = () => {
                 <Button
                   onClick={() => navigate("/signup")}
                   variant="outline"
-                  className="h-12 px-8 border-white text-blue-600 hover:bg-gray-300 text-lg font-semibold"
+                  className="h-12 px-8 bg-white text-blue-600 hover:bg-gray-300 text-lg font-semibold"
                 >
                   Create Account
                 </Button>

@@ -28,5 +28,8 @@ export const API_PATHS = {
         GET_USER_APPOINTMENT: (id) => `/v1/appointment/get-appointments/${id}`,
         CANCEL_APPOINTMENT: (id) => `/v1/appointment/cancel/${id}`,
     },
+    AI: {
+        POST_MESSAGE: "/v1/ai/ask-bot",
+    }
 
 };

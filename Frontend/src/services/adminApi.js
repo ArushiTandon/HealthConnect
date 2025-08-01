@@ -280,3 +280,18 @@ export const appointmentApi = {
     }
   },
 };
+
+export const aiApi = {
+  askBot: async (question) => {
+    try {
+      const response = await axiosInstance.post(API_PATHS.AI.POST_MESSAGE, { question }, {
+        headers: getAuthHeaders(),
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.error || `Failed to ask bot: ${error.message}`
+      );
+    }
+  },
+};
