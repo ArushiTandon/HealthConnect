@@ -9,6 +9,7 @@ HealthConnect is a full-stack web application designed to streamline hospital ma
 - **Real-Time Updates:** Uses Socket.IO for real-time updates on hospital data and appointments.
 - **Appointment Reminders:** Automated email reminders are sent to users a day before their appointment using cron jobs and SendGrid.
 - **Authentication:** Secure login and role-based access for users and admins.
+- **AI Chatbot:** An AI-powered chatbot assists users with queries and navigation throughout the application.
 - **Modern UI:** Built with React and Tailwind CSS for a responsive and user-friendly experience.
 
 ## Project Structure
@@ -27,7 +28,7 @@ HealthConnect/
 │   └── views/                # (Reserved for server-side views)
 ├── Frontend/
 │   ├── src/
-│   │   ├── components/       # React components (UI, admin, hospital, etc.)
+│   │   ├── components/       # React components (UI, admin, hospital, chatbot, etc.)
 │   │   ├── context/          # React context providers
 │   │   ├── hooks/            # Custom React hooks
 │   │   ├── lib/              # Utility libraries (e.g., axios)
