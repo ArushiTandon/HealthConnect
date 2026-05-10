@@ -38,8 +38,7 @@ const Signup = () => {
         username, 
         email, 
         password, 
-        user, 
-      
+        "user",
       );
       
       toast({
