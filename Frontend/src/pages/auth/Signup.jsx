@@ -14,8 +14,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("user");
-  const [hospitalId, setHospitalId] = useState("");
+  const role = "user"
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,8 +38,8 @@ const Signup = () => {
         username, 
         email, 
         password, 
-        role, 
-        role === 'hospital' ? hospitalId : undefined
+        user, 
+      
       );
       
       toast({
@@ -91,29 +90,6 @@ const Signup = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Role Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Account Type</Label>
-                <RadioGroup
-                  value={role}
-                  onValueChange={setRole}
-                  className="flex space-x-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="user" id="user" />
-                    <Label htmlFor="user" className="text-sm text-gray-700 cursor-pointer">
-                      Patient/User
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="hospital" id="admin" />
-                    <Label htmlFor="admin" className="text-sm text-gray-700 cursor-pointer flex items-center">
-                      <Shield className="h-4 w-4 mr-1" />
-                      Hospital Admin
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="username" className="text-sm font-medium text-gray-700">
@@ -145,22 +121,7 @@ const Signup = () => {
                 />
               </div>
 
-              {role === 'hospital' && (
-                <div className="space-y-2">
-                  <Label htmlFor="hospitalId" className="text-sm font-medium text-gray-700">
-                    Hospital ID
-                  </Label>
-                  <Input
-                    id="hospitalId"
-                    type="text"
-                    placeholder="Enter your hospital ID"
-                    value={hospitalId}
-                    onChange={(e) => setHospitalId(e.target.value)}
-                    className="h-11 border-gray-200 focus:border-blue-400 focus:ring-blue-400"
-                    required
-                  />
-                </div>
-              )}
+              
 
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium text-gray-700">

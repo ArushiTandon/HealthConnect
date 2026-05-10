@@ -90,3 +90,8 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+//AuthContext.Provider makes data available globally
+// value is what we share with entire app
+// children represents all components wrapped inside authProvider
+// instead of prop drilling we used useAuth globally. now every component can access all this data and functions.

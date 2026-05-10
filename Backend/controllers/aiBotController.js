@@ -41,7 +41,6 @@ exports.askBot = async (req, res) => {
       {
         model: "mistralai/mistral-7b-instruct:free",
         messages,
-        max_tokens: 100,
       },
       {
         headers: {

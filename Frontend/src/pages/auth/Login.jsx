@@ -15,7 +15,7 @@ const Login = () => {
   const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); //it lets us change pages programmatically
   const { login, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
 
@@ -24,7 +24,7 @@ useEffect(() => {
     console.log("Redirecting based on role:", user.role);
 
     if (user.role === 'hospital') {
-      navigate('/admin', { replace: true });
+      navigate('/admin', { replace: true }); //replace: true eans it replaces current page in history so user can't go back to previous page.
     } else {
       navigate('/', { replace: true });
     }
@@ -43,7 +43,7 @@ const handleSubmit = async (e) => {
       title: "Success",
       description: "Successfully logged in!",
     });
-    console.log("Logged in user:", user);
+    // console.log("Logged in user:", user);
 
 
     

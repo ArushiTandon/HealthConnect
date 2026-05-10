@@ -202,6 +202,7 @@ exports.updateAppointmentStatus = async (req, res) => {
         status: status,
       });
     }
+    //!why are we using string in emit to user
 
     res.status(200).json({
       message: "Appointment status updated successfully",

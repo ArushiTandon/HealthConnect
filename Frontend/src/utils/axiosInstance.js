@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
         'Accept': 'application/json',
     },
 });
-
+//interceptors are functions that run before a request is sent and after a response is received.
 axiosInstance.interceptors.request.use(
     (config) => {
         const accessToken = localStorage.getItem("authToken");

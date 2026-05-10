@@ -118,14 +118,13 @@ exports.updateFacilityStatus = async (req, res) => {
         facilityStatusObj[key] = value;
       }
     } else {
-      // If facilityStatus is empty, convert it properly
+    
       facilityStatusObj[facility] = status;
     }
-
-    // ✅ FIXED: Send the complete facilityStatus object
+    
     req.io.to(hospitalId).emit("facilityStatusUpdated", {
       hospitalId,
-      facilityStatus: facilityStatusObj,  // ✅ Send complete object
+      facilityStatus: facilityStatusObj,
       lastUpdated: hospital.lastUpdated
     });
 
