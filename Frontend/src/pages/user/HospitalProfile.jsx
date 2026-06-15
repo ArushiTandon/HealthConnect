@@ -93,7 +93,7 @@ const HospitalProfile = () => {
     }
 
     const joinRoom = () => {
-      console.log(`Joining hospital room: ${id}`);
+      // console.log(`Joining hospital room: ${id}`);
       socket.emit("join-hospital-room", id);
     };
 
@@ -105,7 +105,7 @@ const HospitalProfile = () => {
 
     // Socket event handlers
     const handleBedUpdate = (data) => {
-      console.log('Received bed availability update:', data);
+      // console.log('Received bed availability update:', data);
       if (data.hospitalId === id) {
         setHospital((prev) => ({
           ...prev,
@@ -116,7 +116,7 @@ const HospitalProfile = () => {
     };
 
     const handleFacilityUpdate = (data) => {
-      console.log('Received facility status update:', data);
+      // console.log('Received facility status update:', data);
       if (data.hospitalId === id) {
         setHospital((prev) => {
           const newState = {
@@ -130,12 +130,12 @@ const HospitalProfile = () => {
           return newState;
         });
       } else {
-        console.log("Hospital ID mismatch:", data.hospitalId, "vs", id);
+        // console.log("Hospital ID mismatch:", data.hospitalId, "vs", id);
       }
     };
 
     const handleHospitalInfoUpdate = (data) => {
-      console.log('Received hospital info update:', data);
+      // console.log('Received hospital info update:', data);
       if (data.hospitalId === id) {
         setHospital((prev) => ({
           ...prev,
@@ -151,7 +151,7 @@ const HospitalProfile = () => {
     socket.on("hospitalInfoUpdated", handleHospitalInfoUpdate);
 
     return () => {
-      console.log(`Leaving hospital room: ${id}`);
+      // console.log(`Leaving hospital room: ${id}`);
       socket.emit("leave-hospital-room", id);
       
       socket.off("bedAvailabilityUpdated", handleBedUpdate);

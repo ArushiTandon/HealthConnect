@@ -26,7 +26,7 @@ export function FacilityManagement({ onUpdate, dashboardData, facilityData, setF
 
   // Initialize facilities from dashboard data
   useEffect(() => {
-    console.log('Dashboard Data:', dashboardData); // Debug log
+    // console.log('Dashboard Data:', dashboardData); // Debug log
     
 
     if(facilityData && facilityData.length > 0){
@@ -36,7 +36,7 @@ export function FacilityManagement({ onUpdate, dashboardData, facilityData, setF
     }
 
     if (dashboardData?.facilityStatus) {
-      console.log('Facility Status:', dashboardData.facilityStatus); // Debug log
+      // console.log('Facility Status:', dashboardData.facilityStatus); // Debug log
       const facilityList = [];
       
       // Create facility list from facilityStatus (this contains all facilities the admin can manage)
@@ -76,13 +76,13 @@ export function FacilityManagement({ onUpdate, dashboardData, facilityData, setF
         });
       });
 
-      console.log('Generated Facility List:', facilityList); // Debug log
+      // console.log('Generated Facility List:', facilityList); // Debug log
       setFacilities(facilityList);
       setFacilityData(facilityList);
     } else {
 
       // Fallback: If dashboardData is not available, show some default facilities
-      console.log('No dashboard data, using fallback facilities');
+      // console.log('No dashboard data, using fallback facilities');
       const defaultFacilities = [
         { id: 'ICU', name: 'ICU', available: true, icon: Heart },
         { id: 'Emergency Department', name: 'Emergency Department', available: true, icon: Ambulance },

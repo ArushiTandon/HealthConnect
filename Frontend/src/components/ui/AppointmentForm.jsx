@@ -21,7 +21,7 @@ const AppointmentForm = ({ isOpen, onClose, onSubmit }) => {
       try {
         const response = await hospitalApi.getHospitals();
         setHospitals(response || []);
-        console.log('Fetched hospitals:', response);
+        // console.log('Fetched hospitals:', response);
       } catch (err) {
         console.error('Failed to fetch hospitals:', err);
         setError('Failed to load hospitals. Please try again later.');

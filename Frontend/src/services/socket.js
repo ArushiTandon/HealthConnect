@@ -10,11 +10,11 @@ const socket = io(import.meta.env.VITE_API_BASE_URL, {
 
 // Connection event handlers
 socket.on('connect', () => {
-  console.log('Connected to server:', socket.id);
+  // console.log('Connected to server:', socket.id);
 });
 
 socket.on('disconnect', (reason) => {
-  console.log('Disconnected from server:', reason);
+  // console.log('Disconnected from server:', reason);
 });
 
 socket.on('connect_error', (error) => {

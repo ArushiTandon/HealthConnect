@@ -45,7 +45,7 @@ const Results = () => {
         params.facility = selectedFacilities.join(",");
       }
 
-      console.log('Sending params:', params);
+      // console.log('Sending params:', params);
 
       const response = await hospitalApi.getHospitals(params);
 

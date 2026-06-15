@@ -207,7 +207,7 @@ export const hospitalApi = {
       const response = await axiosInstance.get(API_PATHS.HOSPITAL.GET_FILTER_OPTIONS, {
         headers: getAuthHeaders(),
       });
-      console.log("Filter Options API Response:", response.data);
+      // console.log("Filter Options API Response:", response.data);
       return response.data;
     } catch (error) {
       throw new Error(

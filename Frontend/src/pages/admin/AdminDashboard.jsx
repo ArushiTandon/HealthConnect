@@ -50,11 +50,11 @@ const AdminDashboard = () => {
     setIsLoading(true);
     try {
       let response = await adminApi.getDashboard();
-      console.log("Dashboard Data:", response);
+      // console.log("Dashboard Data:", response);
 
       setDashboardData(response);
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
+      // console.error("Error fetching dashboard data:", error);
       toast({
         title: "Error",
         description:

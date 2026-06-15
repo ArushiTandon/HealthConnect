@@ -21,7 +21,7 @@ const Login = () => {
 
 useEffect(() => {
   if (isAuthenticated && user) {
-    console.log("Redirecting based on role:", user.role);
+    // console.log("Redirecting based on role:", user.role);
 
     if (user.role === 'hospital') {
       navigate('/admin', { replace: true }); //replace: true eans it replaces current page in history so user can't go back to previous page.

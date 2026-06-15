@@ -51,7 +51,7 @@ const UserAppointments = () => {
       socket.connect();
       
       socket.on('connect', () => {
-        console.log('Socket connected, registering user:', currentUserId);
+        // console.log('Socket connected, registering user:', currentUserId);
         socket.emit('register-user', currentUserId);
       });
     }
@@ -69,7 +69,7 @@ const UserAppointments = () => {
 
     // Socket event listener for appointment updates
     const handleAppointmentUpdate = (data) => {
-      console.log('Received appointment update:', data);
+      // console.log('Received appointment update:', data);
       
       setAppointments((prevAppointments) => {
         const updatedAppointments = prevAppointments.map((apt) => {
@@ -85,7 +85,7 @@ const UserAppointments = () => {
         
         if (data.message) {
           alert(`Appointment Update: ${data.message}`);
-          console.log('Appointment Update:', data.message);
+          // console.log('Appointment Update:', data.message);
 
         }
         
@@ -136,7 +136,7 @@ const UserAppointments = () => {
     ]);
     
     setIsFormOpen(false);
-    console.log("Appointment booked successfully!");
+    // console.log("Appointment booked successfully!");
   } catch (error) {
     console.error("Error booking appointment:", error);
     setError("Failed to book appointment. Please try again.");
