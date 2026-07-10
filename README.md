@@ -60,7 +60,7 @@ HealthConnect/
    PORT=5000
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
-   SENDGRID_API_KEY=your_sendgrid_api_key
+   BREVO_API_KEY=your_brevo_api_key
    ```
 4. (Optional) Seed hospital data:
    ```sh

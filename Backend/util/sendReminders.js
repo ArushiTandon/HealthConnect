@@ -1,5 +1,5 @@
 const Appointment = require("../models/Appointment");
-const sendEmail = require("../services/sendGrid");
+const sendEmail = require("../services/brevoEmail");
 
 const sendReminders = async () => {
   const now = new Date();
